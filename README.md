@@ -1,3 +1,15 @@
+The Project
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/495ae4a1-5f92-4718-98c7-762dcf7d4d2b" />
+# Finance Rental Dashboard
+
+Next.js + Tailwind Project
+
+## Features
+- Login UI
+- Dashboard
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
