@@ -3,12 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <div className="min-h-screen flex">
-      
+
       {/* LEFT SIDE */}
       <div className="hidden md:flex w-1/2 relative bg-[#0B1F3A] text-white p-16">
 
@@ -17,21 +18,18 @@ export default function LoginPage() {
 
         {/* CENTER CONTENT */}
         <div className="relative z-10 max-w-lg m-auto">
-          
-          {/* Title */}
           <h1 className="text-4xl font-semibold leading-tight">
-            Intelijen di balik <br />
+            Bangun akses yang aman <br />
             <span className="text-[#22C55E] font-bold">
-              pertumbuhan institusional.
+              sejak hari pertama.
             </span>
           </h1>
 
-          {/* Description */}
           <p className="mt-6 text-gray-300 text-sm leading-relaxed">
-            Akses dashboard keuangan rental mobil dengan ringkasan transaksi,
-            laporan periodik, dan insight prediktif dalam satu portal.
+            Daftarkan akun baru untuk mulai mengelola transaksi,
+            laporan periodik, dan insight prediksi pendapatan
+            dalam satu sistem.
           </p>
-
         </div>
 
   {/* BOTTOM RIGHT */}
@@ -48,7 +46,7 @@ export default function LoginPage() {
 
       {/* RIGHT SIDE */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-[#F8FAFC] px-6">
-        
+
         <div className="w-full max-w-md">
 
           {/* Logo */}
@@ -68,22 +66,46 @@ export default function LoginPage() {
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-gray-800 mb-1">
-            Selamat datang kembali
+            Buat akun
           </h2>
           <p className="text-sm text-gray-500 mb-6">
-            Silakan masukkan kredensial untuk mengakses akun Anda.
+            Lengkapi formulir untuk membuat akun Anda.
           </p>
 
-          {/* Form */}
-          <form className="flex flex-col gap-4 text-gray-700">
+          {/* FORM */}
+          <form className="flex flex-col text-gray-700 gap-4">
+
+            {/* Nama */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Nama Lengkap
+              </label>
+              <input
+                type="text"
+                placeholder="contoh: Akbar Palekori"
+                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+              />
+            </div>
+
+            {/* Username */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Username
+              </label>
+              <input
+                type="text"
+                placeholder="contoh: akbar.admin"
+                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+              />
+            </div>
 
             {/* Email */}
             <div>
               <label className="text-sm font-medium text-gray-700">
-                Email atau Username
+                Email
               </label>
               <input
-                type="text"
+                type="email"
                 placeholder="contoh: admin@financecontrol.com"
                 className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
               />
@@ -91,19 +113,14 @@ export default function LoginPage() {
 
             {/* Password */}
             <div>
-              <div className="flex justify-between text-sm mb-1">
-                <label className="font-medium text-gray-700">
-                  Kata Sandi
-                </label>
-                <Link href="/lupa-password" className="text-gray-400 cursor-pointer hover:text-gray-600">
-                  Lupa Kata Sandi?
-                </Link>
-              </div>
+              <label className="text-sm font-medium text-gray-700">
+                Kata Sandi
+              </label>
 
-              <div className="relative">
+              <div className="relative mt-1">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Masukkan kata sandi"
+                  placeholder="Minimal 8 karakter"
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
                 />
 
@@ -117,21 +134,43 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Confirm Password */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Konfirmasi Kata Sandi
+              </label>
+
+              <div className="relative mt-1">
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  placeholder="Masukkan ulang kata sandi"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-3 text-gray-400"
+                >
+                  {showConfirm ? "🙈" : "👁️"}
+                </button>
+              </div>
+            </div>
+
             {/* Button */}
             <button
               type="submit"
               className="mt-2 bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition"
             >
-              Masuk
+              Buat Akun
             </button>
-
           </form>
 
-          {/* Register */}
+          {/* Login link */}
           <p className="text-sm text-gray-500 mt-6 text-center">
-            Belum punya akun?{" "}
-            <Link href="/register" className="text-[#0B1F3A] font-medium">
-              Daftar
+            Sudah punya akun?{" "}
+            <Link href="/login" className="text-[#0B1F3A] font-medium">
+              Masuk
             </Link>
           </p>
 

@@ -1,54 +1,46 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 
-export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-
+export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex">
-      
+
       {/* LEFT SIDE */}
       <div className="hidden md:flex w-1/2 relative bg-[#0B1F3A] text-white p-16">
 
         {/* Background */}
         <div className="absolute inset-0 opacity-10 bg-[url('/pattern.png')] bg-cover" />
 
-        {/* CENTER CONTENT */}
+        {/* Content */}
         <div className="relative z-10 max-w-lg m-auto">
-          
-          {/* Title */}
           <h1 className="text-4xl font-semibold leading-tight">
-            Intelijen di balik <br />
+            Reset akses Anda{" "}
             <span className="text-[#22C55E] font-bold">
-              pertumbuhan institusional.
+              dengan aman.
             </span>
           </h1>
 
-          {/* Description */}
           <p className="mt-6 text-gray-300 text-sm leading-relaxed">
-            Akses dashboard keuangan rental mobil dengan ringkasan transaksi,
-            laporan periodik, dan insight prediktif dalam satu portal.
+            Masukkan email terdaftar untuk menerima tautan pengaturan ulang
+            kata sandi akun Rental Finance Control.
           </p>
-
         </div>
 
-  {/* BOTTOM RIGHT */}
-  <div className="absolute bottom-10 right-10 z-10 flex items-center gap-2 text-gray-400 text-sm">
-    <div className="flex -space-x-2">
-      <div className="w-6 h-6 bg-gray-400 rounded-full" />
-      <div className="w-6 h-6 bg-gray-500 rounded-full" />
-      <div className="w-6 h-6 bg-gray-600 rounded-full" />
-    </div>
-    <span>Dipercaya oleh 12.000+ operator institusional.</span>
-  </div>
-
-</div>
+        {/* Footer */}
+        <div className="absolute bottom-10 right-10 z-10 flex items-center gap-2 text-gray-400 text-sm">
+          <div className="flex -space-x-2">
+            <div className="w-6 h-6 bg-gray-400 rounded-full" />
+            <div className="w-6 h-6 bg-gray-500 rounded-full" />
+            <div className="w-6 h-6 bg-gray-600 rounded-full" />
+          </div>
+          <span>Dipercaya oleh 12.000+ operator institusional.</span>
+        </div>
+      </div>
 
       {/* RIGHT SIDE */}
       <div className="flex w-full md:w-1/2 items-center justify-center bg-[#F8FAFC] px-6">
-        
+
         <div className="w-full max-w-md">
 
           {/* Logo */}
@@ -68,10 +60,10 @@ export default function LoginPage() {
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-gray-800 mb-1">
-            Selamat datang kembali
+            Lupa kata sandi
           </h2>
           <p className="text-sm text-gray-500 mb-6">
-            Silakan masukkan kredensial untuk mengakses akun Anda.
+            Masukkan email Anda untuk menerima tautan reset kata sandi.
           </p>
 
           {/* Form */}
@@ -80,41 +72,13 @@ export default function LoginPage() {
             {/* Email */}
             <div>
               <label className="text-sm font-medium text-gray-700">
-                Email atau Username
+                Email Terdaftar
               </label>
               <input
-                type="text"
+                type="email"
                 placeholder="contoh: admin@financecontrol.com"
                 className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
               />
-            </div>
-
-            {/* Password */}
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <label className="font-medium text-gray-700">
-                  Kata Sandi
-                </label>
-                <Link href="/lupa-password" className="text-gray-400 cursor-pointer hover:text-gray-600">
-                  Lupa Kata Sandi?
-                </Link>
-              </div>
-
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Masukkan kata sandi"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400"
-                >
-                  {showPassword ? "🙈" : "👁️"}
-                </button>
-              </div>
             </div>
 
             {/* Button */}
@@ -122,16 +86,15 @@ export default function LoginPage() {
               type="submit"
               className="mt-2 bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition"
             >
-              Masuk
+              Kirim Tautan Reset
             </button>
-
           </form>
 
-          {/* Register */}
+          {/* Back to login */}
           <p className="text-sm text-gray-500 mt-6 text-center">
-            Belum punya akun?{" "}
-            <Link href="/register" className="text-[#0B1F3A] font-medium">
-              Daftar
+            Ingat kata sandi?{" "}
+            <Link href="/login" className="text-[#0B1F3A] font-medium">
+              Kembali ke Masuk
             </Link>
           </p>
 
