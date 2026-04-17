@@ -1,6 +1,7 @@
 
+
 "use client";
-import "../../slicing/dashboard.css";
+import "./dashboard.css";
 
 import dynamic from "next/dynamic";
 const DashboardLineChart = dynamic(() => import("./DashboardLineChart"), { ssr: false });
