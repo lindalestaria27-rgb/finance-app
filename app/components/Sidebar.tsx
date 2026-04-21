@@ -2,6 +2,7 @@
 
 import React from "react";
 import useSidebarCollapse from "../dashboard/useSidebarCollapse";
+import "./sidebar.css";
 
 export type SidebarActive = "dashboard" | "transactions" | "reports" | "prediction" | string;
 

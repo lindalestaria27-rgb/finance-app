@@ -123,7 +123,7 @@ export default function TransactionsPage() {
                 <input ref={dateRef} id="trxDate" name="trxDate" type="date" required value={formDate} onChange={(e) => setFormDate(e.target.value)} />
 
                 <label htmlFor="trxCategory">Kategori</label>
-                <select id="trxCategory" name="trxCategory" required value={formCategory} onChange={(e) => setFormCategory(e.target.value as any)}>
+                <select id="trxCategory" name="trxCategory" required value={formCategory} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormCategory(e.currentTarget.value as "income" | "expense" | "")}>
                   <option value="">Pilih kategori</option>
                   <option value="income">Pendapatan</option>
                   <option value="expense">Pengeluaran</option>
