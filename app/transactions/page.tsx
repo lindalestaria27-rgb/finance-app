@@ -123,11 +123,23 @@ export default function TransactionsPage() {
                 <input ref={dateRef} id="trxDate" name="trxDate" type="date" required value={formDate} onChange={(e) => setFormDate(e.target.value)} />
 
                 <label htmlFor="trxCategory">Kategori</label>
-                <select id="trxCategory" name="trxCategory" required value={formCategory} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormCategory(e.currentTarget.value as "income" | "expense" | "")}>
+                <div className="relative">
+                  <select
+                    id="trxCategory"
+                    name="trxCategory"
+                    required
+                    value={formCategory}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormCategory(e.currentTarget.value as "income" | "expense" | "")}
+                    className="appearance-none pr-12 w-full"
+                  >
                   <option value="">Pilih kategori</option>
                   <option value="income">Pendapatan</option>
                   <option value="expense">Pengeluaran</option>
-                </select>
+                  </select>
+                  <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#405179]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M7 10l5 5 5-5z" fill="currentColor" />
+                  </svg>
+                </div>
 
                 <label htmlFor="trxAmount">Nominal (Rupiah)</label>
                 <input id="trxAmount" name="trxAmount" type="number" min="1" step="1" placeholder="0" required value={formAmount} onChange={(e) => setFormAmount(e.target.value)} />
