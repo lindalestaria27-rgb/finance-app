@@ -7,33 +7,13 @@ const DashboardLineChart = dynamic(() => import("./DashboardLineChart"), { ssr: 
 const DashboardKpiCards = dynamic(() => import("./DashboardKpiCards"), { ssr: false });
 const DashboardProfitAreaChart = dynamic(() => import("./DashboardProfitAreaChart"), { ssr: false });
 const DashboardTopExpense = dynamic(() => import("./DashboardTopExpense"), { ssr: false });
-import useSidebarCollapse from "./useSidebarCollapse";
+import Sidebar from "../components/Sidebar";
 
 
 export default function DashboardPage() {
-  useSidebarCollapse();
   return (
     <div className="dashboard-shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-mark">F</div>
-          <div className="brand-meta">
-            <p className="brand-title">RENTAL FINANCE CONTROL</p>
-            <p className="brand-sub">Sistem Manajemen Rental Mobil</p>
-          </div>
-        </div>
-        <button className="sidebar-toggle" type="button" aria-label="Tampilkan atau sembunyikan sidebar" aria-expanded="true">‹</button>
-        <nav className="nav">
-          <a href="/dashboard" className="nav-link active"><span className="nav-icon">▦</span><span className="nav-text">Dasbor</span></a>
-          <a href="/transactions" className="nav-link"><span className="nav-icon">↹</span><span className="nav-text">Transaksi</span></a>
-          <a href="/reports" className="nav-link"><span className="nav-icon">▤</span><span className="nav-text">Laporan</span></a>
-          <a href="/prediction" className="nav-link"><span className="nav-icon">◔</span><span className="nav-text">Prediksi</span></a>
-        </nav>
-        <div className="sidebar-foot">
-          <p className="user-name">Akbar Palekori</p>
-          <p className="user-role">Pemilik</p>
-        </div>
-      </aside>
+      <Sidebar active="dashboard" />
       <main className="main-area">
         <header className="topbar">
           <div>

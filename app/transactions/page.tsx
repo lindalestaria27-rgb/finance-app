@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import TransactionTable, { Transaction } from "./TransactionTable";
+import Sidebar from "../components/Sidebar";
 import "./transactions.css";
 
 export default function TransactionsPage() {
@@ -92,36 +93,7 @@ export default function TransactionsPage() {
 
   return (
     <div className="page-shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-mark">F</div>
-          <div className="brand-meta">
-            <p className="brand-title">RENTAL FINANCE CONTROL</p>
-            <p className="brand-sub">Sistem Manajemen Rental Mobil</p>
-          </div>
-        </div>
-        <button className="sidebar-toggle" type="button" aria-label="Tampilkan atau sembunyikan sidebar" aria-expanded={isAdding ? "false" : "true"}>
-          &#x2039;
-        </button>
-        <nav className="nav">
-          <a href="/dashboard" className="nav-link">
-            <span className="nav-icon">▦</span>
-            <span className="nav-text">Dasbor</span>
-          </a>
-          <a href="/transactions" className="nav-link active">
-            <span className="nav-icon">↹</span>
-            <span className="nav-text">Transaksi</span>
-          </a>
-          <a href="/reports" className="nav-link">
-            <span className="nav-icon">▤</span>
-            <span className="nav-text">Laporan</span>
-          </a>
-          <a href="/prediction" className="nav-link">
-            <span className="nav-icon">◔</span>
-            <span className="nav-text">Prediksi</span>
-          </a>
-        </nav>
-      </aside>
+      <Sidebar active="transactions" />
 
       <main className="main-content">
         <header className="page-head">

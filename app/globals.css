@@ -340,6 +340,96 @@ html.sidebar-collapsed-preload .dashboard-shell .sidebar-toggle {
   font-size: 0.76rem;
 }
 
+/* Logout button styling to match sidebar nav */
+.sidebar-logout {
+  margin-top: 8px;
+  padding-top: 6px;
+}
+
+.sidebar-logout .btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  /* match nav-link vertical spacing so text aligns */
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: #a8bae0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 0;
+  cursor: pointer;
+  align-self: flex-start;
+  line-height: 1;
+}
+
+.sidebar-logout .btn-logout .nav-icon {
+  width: 18px;
+  text-align: center;
+}
+
+/* SVG logout icon sizing */
+.icon-logout {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.sidebar-logout .btn-logout:hover {
+  background: rgba(103, 142, 222, 0.18);
+  color: #edf3ff;
+}
+
+.sidebar-logout .btn-logout:focus {
+  outline: 2px solid rgba(92, 135, 223, 0.25);
+  outline-offset: 2px;
+}
+
+/* Collapsed sidebar: compact logout button to match nav items */
+.dashboard-shell.is-collapsed .sidebar-logout .btn-logout,
+html.sidebar-collapsed-preload .dashboard-shell .sidebar-logout .btn-logout,
+.page-shell.is-collapsed .sidebar-logout .btn-logout,
+html.sidebar-collapsed-preload .page-shell .sidebar-logout .btn-logout {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 0; /* hide text in collapsed state */
+}
+
+.dashboard-shell.is-collapsed .sidebar-logout .nav-text,
+html.sidebar-collapsed-preload .dashboard-shell .sidebar-logout .nav-text,
+.page-shell.is-collapsed .sidebar-logout .nav-text,
+html.sidebar-collapsed-preload .page-shell .sidebar-logout .nav-text {
+  display: none;
+}
+
+.dashboard-shell.is-collapsed .sidebar-logout .nav-icon,
+html.sidebar-collapsed-preload .dashboard-shell .sidebar-logout .nav-icon,
+.page-shell.is-collapsed .sidebar-logout .nav-icon,
+html.sidebar-collapsed-preload .page-shell .sidebar-logout .nav-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(103, 142, 222, 0.15);
+  font-size: 0.92rem;
+}
+
+/* Center the logout button in collapsed sidebar so it aligns with nav icons */
+.dashboard-shell.is-collapsed .sidebar-logout,
+html.sidebar-collapsed-preload .dashboard-shell .sidebar-logout,
+.page-shell.is-collapsed .sidebar-logout,
+html.sidebar-collapsed-preload .page-shell .sidebar-logout {
+  display: flex;
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .main-area {
   padding: 22px;
 }
