@@ -1,3 +1,9 @@
+@import "tailwindcss";
+
+.bg-pattern {
+  background-image: url('/pattern.png');
+}
+
 @media (max-width: 900px) {
   .content-grid {
     grid-template-columns: 1fr;

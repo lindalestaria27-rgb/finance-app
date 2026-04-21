@@ -10,7 +10,7 @@ export default function ForgotPasswordPage() {
       <div className="hidden md:flex w-1/2 relative bg-[#0B1F3A] text-white p-16">
 
         {/* Background */}
-        <div className="absolute inset-0 opacity-10 bg-[url('/pattern.png')] bg-cover" />
+        <div className="absolute inset-0 opacity-10 bg-pattern bg-cover" />
 
         {/* Content */}
         <div className="relative z-10 max-w-lg m-auto">
