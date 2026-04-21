@@ -1,7 +1,6 @@
 
 
 "use client";
-import "./dashboard.css";
 
 import dynamic from "next/dynamic";
 const DashboardLineChart = dynamic(() => import("./DashboardLineChart"), { ssr: false });
@@ -9,6 +8,7 @@ const DashboardKpiCards = dynamic(() => import("./DashboardKpiCards"), { ssr: fa
 const DashboardProfitAreaChart = dynamic(() => import("./DashboardProfitAreaChart"), { ssr: false });
 const DashboardTopExpense = dynamic(() => import("./DashboardTopExpense"), { ssr: false });
 import useSidebarCollapse from "./useSidebarCollapse";
+
 
 export default function DashboardPage() {
   useSidebarCollapse();
