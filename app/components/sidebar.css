@@ -1,0 +1,247 @@
+/* Shared sidebar styles extracted from page-specific CSS */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(170deg, #071a49 0%, #06153a 100%);
+  color: #deebff;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  transition: padding 220ms ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 18px;
+  border-bottom: 1px solid rgba(220, 235, 255, 0.14);
+}
+
+.brand-mark {
+  flex: 0 0 34px;
+  min-width: 34px;
+  max-width: 34px;
+  min-height: 34px;
+  max-height: 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, #2a9f78, #56c5a0);
+  color: #06392b;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.brand-title {
+  margin: 0;
+  font: 700 0.66rem "Sora", sans-serif;
+  letter-spacing: 0.11em;
+}
+
+.brand-sub {
+  margin: 2px 0 0;
+  color: #9ab0df;
+  font-size: 0.7rem;
+}
+
+.sidebar-toggle {
+  margin: 12px 0 0;
+  align-self: flex-end;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(184, 202, 236, 0.35);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #dbe8ff;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.nav {
+  margin-top: 22px;
+  display: grid;
+  gap: 6px;
+}
+
+.nav-link {
+  color: #a8bae0;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-icon {
+  width: 18px;
+  text-align: center;
+  font-size: 0.92rem;
+}
+
+.nav-text {
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  background: rgba(103, 142, 222, 0.18);
+  color: #edf3ff;
+}
+
+.nav-link.active {
+  background: rgba(103, 142, 222, 0.3);
+  color: #ffffff;
+}
+
+.sidebar-foot {
+  margin-top: auto;
+  padding: 12px;
+  border-top: 1px solid rgba(220, 235, 255, 0.14);
+}
+
+.user-name {
+  margin: 0;
+  color: #eef4ff;
+  font-weight: 600;
+  font-size: 0.86rem;
+}
+
+.user-role {
+  margin: 3px 0 0;
+  color: #9cb0dc;
+  font-size: 0.76rem;
+}
+
+.sidebar-logout {
+  margin-top: 10px;
+}
+
+.btn-logout {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.icon-logout {
+  width: 20px;
+  height: 20px;
+}
+
+/* Support collapsed layout for both page shells */
+.dashboard-shell.is-collapsed .brand-meta,
+.page-shell.is-collapsed .brand-meta,
+.dashboard-shell.is-collapsed .sidebar-foot,
+.page-shell.is-collapsed .sidebar-foot {
+  display: none;
+}
+
+.dashboard-shell.is-collapsed .brand,
+.page-shell.is-collapsed .brand {
+  justify-content: center;
+  padding: 4px 0 12px;
+}
+
+.dashboard-shell.is-collapsed .brand-mark,
+.page-shell.is-collapsed .brand-mark {
+  flex: 0 0 34px !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  max-width: 34px !important;
+  max-height: 34px !important;
+  transform: none !important;
+}
+
+.dashboard-shell.is-collapsed .nav,
+.page-shell.is-collapsed .nav {
+  justify-items: center;
+}
+
+.dashboard-shell.is-collapsed .nav-link,
+.page-shell.is-collapsed .nav-link {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  justify-content: center;
+  font-size: 0;
+  border-radius: 12px;
+}
+
+.dashboard-shell.is-collapsed .nav-text,
+.page-shell.is-collapsed .nav-text {
+  display: none;
+}
+
+.dashboard-shell.is-collapsed .nav-icon,
+.page-shell.is-collapsed .nav-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(103, 142, 222, 0.15);
+  font-size: 0.9rem;
+}
+
+.dashboard-shell.is-collapsed .nav-link.active .nav-icon,
+.page-shell.is-collapsed .nav-link.active .nav-icon {
+  background: rgba(114, 150, 228, 0.36);
+}
+
+@media (min-width: 981px) {
+  /* On wide screens the shell becomes a fixed-layout container and the sidebar is fixed to the left */
+  .dashboard-shell,
+  .page-shell {
+    display: block;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    height: 100vh;
+    min-height: 100vh;
+  }
+
+  .dashboard-shell.is-collapsed .sidebar,
+  .page-shell.is-collapsed .sidebar {
+    width: 92px;
+  }
+
+  /* Keep the toggle aligned in collapsed state */
+  .dashboard-shell.is-collapsed .sidebar-toggle,
+  .page-shell.is-collapsed .sidebar-toggle {
+    align-self: center;
+    transform: rotate(180deg);
+  }
+}
