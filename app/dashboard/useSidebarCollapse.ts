@@ -12,16 +12,19 @@ export default function useSidebarCollapse() {
       ".sidebar-toggle"
     ) as HTMLElement | null;
 
-    if (!shell || !toggle) return;
-
     const key = "rfc-sidebar-collapsed";
     let isCollapsed = localStorage.getItem(key) === "1";
 
     function applyState(collapsed: boolean) {
-      // ⬇️ FIX UTAMA DI SINI (pakai optional chaining)
-      shell?.classList.toggle("is-collapsed", collapsed);
-      toggle?.setAttribute("aria-expanded", String(!collapsed));
+      // ✅ FIX: guard di dalam function (TypeScript pasti lolos)
+      if (!shell || !toggle) return;
+
+      shell.classList.toggle("is-collapsed", collapsed);
+      toggle.setAttribute("aria-expanded", String(!collapsed));
     }
+
+    // kalau elemen tidak ada, tidak lanjut
+    if (!shell || !toggle) return;
 
     applyState(isCollapsed);
 
