@@ -18,10 +18,9 @@ export default function useSidebarCollapse() {
     let isCollapsed = localStorage.getItem(key) === "1";
 
     function applyState(collapsed: boolean) {
-      if (!shell || !toggle) return; // tambahan safety
-
-      shell.classList.toggle("is-collapsed", collapsed);
-      toggle.setAttribute("aria-expanded", String(!collapsed));
+      // ⬇️ FIX UTAMA DI SINI (pakai optional chaining)
+      shell?.classList.toggle("is-collapsed", collapsed);
+      toggle?.setAttribute("aria-expanded", String(!collapsed));
     }
 
     applyState(isCollapsed);
