@@ -117,7 +117,7 @@ export default function PrediksiPage() {
                   tickLine={false} 
                   tickFormatter={(val) => `Rp${(val / 1000000000).toFixed(0)}M`}
                 />
-                <Tooltip formatter={(value: number) => format(value)} />
+                <Tooltip formatter={(value) => format(Number(value ?? 0))} />
 
                 <Line
                   connectNulls
