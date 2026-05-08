@@ -60,10 +60,13 @@ export default function TransactionsPage() {
 		 setPendingDeleteIndex(null);
 	 }
 
-	 function cancelDelete() {
-		 setPendingDeleteIndex(null);
-	 }
+  function cancelDelete() {
+    setPendingDeleteIndex(null);
+  }
 
+  function formatIdr(value: number) {
+    return value.toLocaleString("id-ID");
+  }
 	 function handleSubmit(e: React.FormEvent) {
 		 e.preventDefault();
 		 const amountNumber = Math.max(0, Math.round(Number(formAmount || 0)));

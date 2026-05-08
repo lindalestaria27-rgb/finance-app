@@ -4,7 +4,7 @@ import React from "react";
 import useSidebarCollapse from "../dashboard/useSidebarCollapse";
 import "./sidebar.css";
 
-export type SidebarActive = "dashboard" | "transactions" | "reports" | "prediction" | string;
+export type SidebarActive = "dashboard" | "transactions" | "reports" | "predictions" | string;
 
 interface Props {
   active?: SidebarActive;
@@ -29,7 +29,11 @@ export default function Sidebar({ active = "" }: Props) {
         <a href="/dashboard" className={`nav-link ${active === "dashboard" ? "active" : ""}`}><span className="nav-icon">▦</span><span className="nav-text">Dasbor</span></a>
         <a href="/transactions" className={`nav-link ${active === "transactions" ? "active" : ""}`}><span className="nav-icon">↹</span><span className="nav-text">Transaksi</span></a>
         <a href="/reports" className={`nav-link ${active === "reports" ? "active" : ""}`}><span className="nav-icon">▤</span><span className="nav-text">Laporan</span></a>
-        <a href="/prediction" className={`nav-link ${active === "prediction" ? "active" : ""}`}><span className="nav-icon">◔</span><span className="nav-text">Prediksi</span></a>
+<<<<<<< HEAD
+        <a href="/predictions" className={`nav-link ${active === "predictions" ? "active" : ""}`}><span className="nav-icon">◔</span><span className="nav-text">Prediksi</span></a>
+=======
+        <a href="/predictions " className={`nav-link ${active === "predictions" ? "active" : ""}`}><span className="nav-icon">◔</span><span className="nav-text">Prediksi</span></a>
+>>>>>>> origin/main
       </nav>
 
       <div className="sidebar-foot">

@@ -38,7 +38,11 @@ export default function TransactionTable({ transactions, onEdit, onDelete, editi
             <td>{formatDisplayDate(trx.date)}</td>
             <td><span className={`tag ${isIncome ? 'in' : 'out'}`}>{isIncome ? 'Pendapatan' : 'Pengeluaran'}</span></td>
             <td>{trx.note}</td>
+<<<<<<< HEAD
             <td className={`amount ${isIncome ? 'pos' : 'neg'}`}>{isIncome ? '+Rp' : '-Rp'}{formatIdr(displayAmount)}</td>
+=======
+            <td className={`amount ${isIncome ? 'pos' : 'neg'}`}>{isIncome ? '+Rp' : '-Rp'}{formatIdr(displayAmount)}</td>
+>>>>>>> origin/main
             <td className="actions">
               <button type="button" className="edit-btn" onClick={() => onEdit(idx)}>Ubah</button>
               <button type="button" className="danger delete-btn" onClick={() => onDelete(idx)}>Hapus</button>
