@@ -77,13 +77,9 @@ function normalizeCategory(category: string): 'in' | 'out' {
   return category === 'income' ? 'in' : category === 'expense' ? 'out' : (category as 'in' | 'out');
 }
 
-function convertDateToBackendFormat(isoDate: string): string {
-  // Convert YYYY-MM-DD to DD-MM-YYYY
-  const parts = isoDate.split('-');
-  if (parts.length === 3) {
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-  }
-  return isoDate;
+function validateDateFormat(isoDate: string): boolean {
+  // Validate YYYY-MM-DD
+  return /^\d{4}-\d{2}-\d{2}$/.test(isoDate);
 }
 
 function resolveAuthorizationHeader(request: Request): string | null {
@@ -188,7 +184,7 @@ export async function POST(request: Request) {
       note: body.note ?? ''
     };
 
-    if (!payload.transaction_date || !payload.note || payload.amount <= 0) {
+    if (!payload.transaction_date || !validateDateFormat(payload.transaction_date) || !payload.note || payload.amount <= 0) {
       return NextResponse.json(
         {
           success: false,
@@ -215,10 +211,7 @@ export async function POST(request: Request) {
         Authorization: authHeader,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        ...payload,
-        transaction_date: convertDateToBackendFormat(payload.transaction_date)
-      }),
+      body: JSON.stringify(payload),
       cache: 'no-store'
     });
 
