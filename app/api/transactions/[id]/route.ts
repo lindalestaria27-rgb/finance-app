@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 
 const BACKEND_BASE_URL = process.env.FINANCE_API_BASE_URL ?? 'https://fin-management-backend.orangewave-4f1698d3.eastasia.azurecontainerapps.io';
-const BACKEND_BEARER_TOKEN = process.env.FINANCE_API_BEARER_TOKEN ?? 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcl9pZCI6IjBlMDAwMDcxLTRlYTMtNGUyMy05MzhmLWI4Y2RlZmQ0ODliZSIsInJvbGUiOiJzdGFmZiIsImV4cCI6MTc3ODIyNTUwN30.d5hQs9DLHe7k_8yDFMYLVW6YM275Mb_JP-nIE1RIwCw';
 
 type UpdateTransactionPayload = {
   amount: number;
@@ -36,6 +35,17 @@ function convertDateToBackendFormat(isoDate: string): string {
   return isoDate;
 }
 
+function resolveAuthorizationHeader(request: Request): string | null {
+  const incomingHeader = request.headers.get('authorization')?.trim();
+  if (!incomingHeader) {
+    return null;
+  }
+
+  return incomingHeader.toLowerCase().startsWith('bearer ')
+    ? incomingHeader
+    : `Bearer ${incomingHeader}`;
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -64,8 +74,17 @@ export async function PATCH(
       );
     }
 
-    // Forward Authorization header from client if present
-    const authHeader = request.headers.get('authorization') || BACKEND_BEARER_TOKEN;
+    const authHeader = resolveAuthorizationHeader(request);
+    if (!authHeader) {
+      return NextResponse.json(
+        {
+          success: false,
+          server_message: 'Unauthorized'
+        } satisfies BackendUpdateTransactionResponse,
+        { status: 401 }
+      );
+    }
+
     const response = await fetch(`${BACKEND_BASE_URL}/transactions/${id}`, {
       method: 'PATCH',
       headers: {
@@ -119,8 +138,17 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    // Forward Authorization header from client if present
-    const authHeader = request.headers.get('authorization') || BACKEND_BEARER_TOKEN;
+    const authHeader = resolveAuthorizationHeader(request);
+    if (!authHeader) {
+      return NextResponse.json(
+        {
+          success: false,
+          server_message: 'Unauthorized'
+        } satisfies BackendDeleteTransactionResponse,
+        { status: 401 }
+      );
+    }
+
     const response = await fetch(`${BACKEND_BASE_URL}/transactions/${id}`, {
       method: 'DELETE',
       headers: {

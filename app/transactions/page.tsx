@@ -21,7 +21,7 @@ type TransactionsApiResponse = {
 type PaginationItem = number | "ellipsis";
 
 export default function TransactionsPage() {
-    const { token } = useAuth();
+  const { token, isLoading: isAuthLoading } = useAuth();
 	 const [transactions, setTransactions] = useState<Transaction[]>([]);
 	 const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	 const [isAdding, setIsAdding] = useState(false);
@@ -43,12 +43,31 @@ export default function TransactionsPage() {
 	 const [formNote, setFormNote] = useState("");
 	 const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
 
+   function getAuthHeaderValue(currentToken: string | null): string | null {
+     if (!currentToken) {
+       return null;
+     }
+
+     return currentToken.toLowerCase().startsWith("bearer ")
+       ? currentToken
+       : `Bearer ${currentToken}`;
+   }
+
    async function loadTransactions(page: number) {
+     const authHeader = getAuthHeaderValue(token);
+     if (!authHeader) {
+       setTransactions([]);
+       setCurrentPage(1);
+       setTotalItems(0);
+       setTotalPages(1);
+       return;
+     }
+
      try {
        setIsLoadingTransactions(true);
        const response = await fetch(`/api/transactions?page=${page}&limit=${pageSize}`, {
          cache: "no-store",
-         headers: token ? { Authorization: `Bearer ${token}` } : undefined
+         headers: { Authorization: authHeader }
        });
        const data = (await response.json()) as TransactionsApiResponse;
        setTransactions(data.items ?? []);
@@ -67,8 +86,12 @@ export default function TransactionsPage() {
    }
 
    useEffect(() => {
+     if (isAuthLoading) {
+       return;
+     }
+
      void loadTransactions(currentPage);
-   }, [currentPage]);
+   }, [isAuthLoading, token, currentPage, pageSize]);
 
 	 function clearForm() {
 		 setFormDate("");
@@ -112,12 +135,19 @@ export default function TransactionsPage() {
 		   return;
 		 }
 
+		 const authHeader = getAuthHeaderValue(token);
+		 if (!authHeader) {
+		   alert("Sesi login tidak ditemukan, silakan login ulang");
+		   setPendingDeleteIndex(null);
+		   return;
+		 }
+
 		 setIsDeletingTransaction(true);
      fetch(`/api/transactions/${transactionToDelete.id}`, {
        method: "DELETE",
        headers: {
          "Content-Type": "application/json",
-         ...(token ? { Authorization: `Bearer ${token}` } : {})
+         Authorization: authHeader
        }
      })
 		   .then(async (response) => {
@@ -158,6 +188,12 @@ export default function TransactionsPage() {
      setFormError("");
 
 		 if (editingIndex != null) {
+       const authHeader = getAuthHeaderValue(token);
+       if (!authHeader) {
+         setFormError("Sesi login tidak ditemukan, silakan login ulang");
+         return;
+       }
+
        if (!editingTransactionId) {
          setFormError("ID transaksi tidak ditemukan");
          return;
@@ -169,7 +205,7 @@ export default function TransactionsPage() {
            method: "PATCH",
            headers: {
              "Content-Type": "application/json",
-             ...(token ? { Authorization: `Bearer ${token}` } : {})
+             Authorization: authHeader
            },
            body: JSON.stringify({
              amount: amountNumber,
@@ -205,13 +241,19 @@ export default function TransactionsPage() {
          setIsSubmitting(false);
        }
 		 } else {
+  		 const authHeader = getAuthHeaderValue(token);
+  		 if (!authHeader) {
+  		   setFormError("Sesi login tidak ditemukan, silakan login ulang");
+  		   return;
+  		 }
+
        setIsSubmitting(true);
        try {
          const response = await fetch("/api/transactions", {
            method: "POST",
            headers: {
              "Content-Type": "application/json",
-             ...(token ? { Authorization: `Bearer ${token}` } : {})
+               Authorization: authHeader
            },
            body: JSON.stringify({
              amount: amountNumber,
