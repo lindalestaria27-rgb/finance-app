@@ -34,6 +34,14 @@ export default function TransactionsPage() {
    const [totalItems, setTotalItems] = useState(0);
    const [totalPages, setTotalPages] = useState(1);
 	 const [isDeletingTransaction, setIsDeletingTransaction] = useState(false);
+   const [highlightedTransactionId, setHighlightedTransactionId] = useState<string | null>(null);
+
+   // Auto-clear highlight after 2 seconds
+   useEffect(() => {
+     if (!highlightedTransactionId) return;
+     const timer = setTimeout(() => setHighlightedTransactionId(null), 2000);
+     return () => clearTimeout(timer);
+   }, [highlightedTransactionId]);
 
 	 const dateRef = useRef<HTMLInputElement | null>(null);
 
@@ -234,6 +242,7 @@ export default function TransactionsPage() {
          }
 
          await loadTransactions(currentPage);
+         setHighlightedTransactionId(editingTransactionId);
        } catch {
          setFormError("Gagal mengubah transaksi");
          return;
@@ -282,6 +291,9 @@ export default function TransactionsPage() {
 
          setCurrentPage(1);
          await loadTransactions(1);
+         if (data.id) {
+           setHighlightedTransactionId(data.id);
+         }
        } catch {
          setFormError("Gagal menyimpan transaksi");
          return;
@@ -425,7 +437,7 @@ export default function TransactionsPage() {
                     <th>Aksi</th>
                   </tr>
                 </thead>
-                <TransactionTable transactions={transactions} onEdit={handleEdit} onDelete={handleDelete} editingIndex={editingIndex} pageNumber={currentPage} pageSize={pageSize} />
+                <TransactionTable transactions={transactions} onEdit={handleEdit} onDelete={handleDelete} editingIndex={editingIndex} pageNumber={currentPage} pageSize={pageSize} highlightedId={highlightedTransactionId} />
               </table>
             </div>
             <div className="pagination-bar" aria-live="polite">
@@ -486,11 +498,18 @@ export default function TransactionsPage() {
           <h3 id="deleteModalTitle">Konfirmasi Hapus</h3>
           <p>Yakin ingin menghapus transaksi ini?</p>
           <div className="modal-actions">
-            <button type="button" className="btn-ghost" id="deleteNoBtn" onClick={cancelDelete}>
+            <button type="button" className="btn-ghost" id="deleteNoBtn" onClick={cancelDelete} disabled={isDeletingTransaction}>
               Tidak
             </button>
-            <button type="button" className="btn-danger" id="deleteYesBtn" onClick={confirmDelete}>
-              Ya
+            <button type="button" className={`btn-danger ${isDeletingTransaction ? 'is-loading' : ''}`} id="deleteYesBtn" onClick={confirmDelete} disabled={isDeletingTransaction}>
+              {isDeletingTransaction ? (
+                <>
+                  <span className="spinner"></span>
+                  Menghapus...
+                </>
+              ) : (
+                'Ya'
+              )}
             </button>
           </div>
         </div>

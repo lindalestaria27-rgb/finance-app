@@ -31,6 +31,15 @@ function validateDateFormat(isoDate: string): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(isoDate);
 }
 
+function convertDateToBackendFormat(isoDate: string): string {
+  // Convert YYYY-MM-DD to DD-MM-YYYY
+  const parts = isoDate.split('-');
+  if (parts.length === 3) {
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  return isoDate;
+}
+
 function resolveAuthorizationHeader(request: Request): string | null {
   const incomingHeader = request.headers.get('authorization')?.trim();
   if (!incomingHeader) {
@@ -87,7 +96,10 @@ export async function PATCH(
         Authorization: authHeader,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ...payload,
+        transaction_date: convertDateToBackendFormat(payload.transaction_date)
+      }),
       cache: 'no-store'
     });
 
