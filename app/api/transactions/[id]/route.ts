@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const BACKEND_BASE_URL = process.env.FINANCE_API_BASE_URL ?? 'https://fin-management-backend.orangewave-4f1698d3.eastasia.azurecontainerapps.io';
-const BACKEND_BEARER_TOKEN = process.env.FINANCE_API_BEARER_TOKEN ?? 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcl9pZCI6IjBlMDAwMDcxLTRlYTMtNGUyMy05MzhmLWI4Y2RlZmQ0ODliZSIsInJvbGUiOiJzdGFmZiIsImV4cCI6MTc3ODIyNDc2M30.vVG5eWgbZJOCUiT3UZ6kedaLAAPbpcUbivswbiNGkuE';
+const BACKEND_BEARER_TOKEN = process.env.FINANCE_API_BEARER_TOKEN ?? 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcl9pZCI6IjBlMDAwMDcxLTRlYTMtNGUyMy05MzhmLWI4Y2RlZmQ0ODliZSIsInJvbGUiOiJzdGFmZiIsImV4cCI6MTc3ODIyNTUwN30.d5hQs9DLHe7k_8yDFMYLVW6YM275Mb_JP-nIE1RIwCw';
 
 type UpdateTransactionPayload = {
   amount: number;
@@ -97,6 +97,54 @@ export async function PATCH(
         success: false,
         server_message: 'Gagal mengubah transaksi'
       } satisfies BackendUpdateTransactionResponse,
+      { status: 500 }
+    );
+  }
+}
+
+type BackendDeleteTransactionResponse = {
+  success?: boolean;
+  server_message?: string;
+  detail?: string;
+  message?: string;
+  deleted_at?: string;
+};
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    const response = await fetch(`${BACKEND_BASE_URL}/transactions/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: BACKEND_BEARER_TOKEN
+      },
+      cache: 'no-store'
+    });
+
+    const data = (await response.json().catch(() => null)) as BackendDeleteTransactionResponse | null;
+
+    if (!data) {
+      return NextResponse.json(
+        {
+          success: false,
+          server_message: 'Backend response tidak valid'
+        } satisfies BackendDeleteTransactionResponse,
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    console.error('Failed to delete transaction', error);
+    return NextResponse.json(
+      {
+        success: false,
+        server_message: 'Gagal menghapus transaksi'
+      } satisfies BackendDeleteTransactionResponse,
       { status: 500 }
     );
   }

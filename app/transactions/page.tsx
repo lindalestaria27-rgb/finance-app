@@ -31,6 +31,7 @@ export default function TransactionsPage() {
    const [pageSize, setPageSize] = useState(10);
    const [totalItems, setTotalItems] = useState(0);
    const [totalPages, setTotalPages] = useState(1);
+	 const [isDeletingTransaction, setIsDeletingTransaction] = useState(false);
 
 	 const dateRef = useRef<HTMLInputElement | null>(null);
 
@@ -98,8 +99,44 @@ export default function TransactionsPage() {
 
 	 function confirmDelete() {
 		 if (pendingDeleteIndex == null) return;
-		 setTransactions((prev) => prev.filter((_, i) => i !== pendingDeleteIndex));
-		 setPendingDeleteIndex(null);
+		 const transactionToDelete = transactions[pendingDeleteIndex];
+		 
+		 if (!transactionToDelete.id) {
+		   alert("ID transaksi tidak ditemukan");
+		   setPendingDeleteIndex(null);
+		   return;
+		 }
+
+		 setIsDeletingTransaction(true);
+		 fetch(`/api/transactions/${transactionToDelete.id}`, {
+		   method: "DELETE",
+		   headers: {
+		     "Content-Type": "application/json"
+		   }
+		 })
+		   .then(async (response) => {
+		     const data = (await response.json().catch(() => null)) as
+		       | {
+		           success?: boolean;
+		           server_message?: string;
+		           detail?: string;
+		         }
+		       | null;
+
+		     if (!response.ok || !data?.success) {
+		       alert(data?.server_message ?? data?.detail ?? "Gagal menghapus transaksi");
+		       return;
+		     }
+
+		     await loadTransactions(currentPage);
+		     setPendingDeleteIndex(null);
+		   })
+		   .catch(() => {
+		     alert("Gagal menghapus transaksi");
+		   })
+		   .finally(() => {
+		     setIsDeletingTransaction(false);
+		   });
 	 }
 
   function cancelDelete() {
@@ -123,7 +160,7 @@ export default function TransactionsPage() {
        setIsSubmitting(true);
        try {
          const response = await fetch(`/api/transactions/${editingTransactionId}`, {
-           method: "PUT",
+           method: "PATCH",
            headers: {
              "Content-Type": "application/json"
            },
