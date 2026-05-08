@@ -10,6 +10,8 @@ export default function TransactionsPage() {
 	 const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	 const [isAdding, setIsAdding] = useState(false);
 	 const [pendingDeleteIndex, setPendingDeleteIndex] = useState<number | null>(null);
+   const [isSubmitting, setIsSubmitting] = useState(false);
+   const [formError, setFormError] = useState("");
 
 	 const dateRef = useRef<HTMLInputElement | null>(null);
 
@@ -18,18 +20,26 @@ export default function TransactionsPage() {
 	 const [formAmount, setFormAmount] = useState<number | string>("");
 	 const [formNote, setFormNote] = useState("");
 
-	 useEffect(() => {
-		 fetch("/api/transactions")
-			 .then((r) => r.json())
-			 .then((data: Transaction[]) => setTransactions(data))
-			 .catch(() => setTransactions([]));
-	 }, []);
+   async function loadTransactions() {
+     try {
+       const response = await fetch("/api/transactions", { cache: "no-store" });
+       const data = (await response.json()) as Transaction[];
+       setTransactions(data);
+     } catch {
+       setTransactions([]);
+     }
+   }
+
+   useEffect(() => {
+     void loadTransactions();
+   }, []);
 
 	 function clearForm() {
 		 setFormDate("");
 		 setFormCategory("");
 		 setFormAmount("");
 		 setFormNote("");
+     setFormError("");
 		 setEditingIndex(null);
 	 }
 
@@ -67,9 +77,10 @@ export default function TransactionsPage() {
   function formatIdr(value: number) {
     return value.toLocaleString("id-ID");
   }
-	 function handleSubmit(e: React.FormEvent) {
+   async function handleSubmit(e: React.FormEvent) {
 		 e.preventDefault();
 		 const amountNumber = Math.max(0, Math.round(Number(formAmount || 0)));
+     setFormError("");
 
 		 if (editingIndex != null) {
 			 setTransactions((prev) => {
@@ -78,7 +89,54 @@ export default function TransactionsPage() {
 				 return copy;
 			 });
 		 } else {
-			 setTransactions((prev) => [{ date: formDate, category: formCategory as Transaction["category"], note: formNote, amount: amountNumber }, ...prev]);
+       setIsSubmitting(true);
+       try {
+         const response = await fetch("/api/transactions", {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json"
+           },
+           body: JSON.stringify({
+             amount: amountNumber,
+             category: formCategory === "income" ? "in" : "out",
+             transaction_date: formDate,
+             note: formNote
+           })
+         });
+
+         const data = (await response.json().catch(() => null)) as
+           | {
+             success?: boolean;
+             server_message?: string;
+             id?: string;
+             amount?: number;
+             category?: "in" | "out";
+             transaction_date?: string;
+             note?: string;
+           }
+           | null;
+
+         if (!response.ok || !data?.success) {
+           setFormError(data?.server_message ?? "Gagal menyimpan transaksi");
+           return;
+         }
+
+         setTransactions((prev) => [
+           {
+             id: data.id,
+             date: data.transaction_date ?? formDate,
+             category: data.category === "in" ? "income" : "expense",
+             note: data.note ?? formNote,
+             amount: Math.abs(Number(data.amount ?? amountNumber))
+           },
+           ...prev
+         ]);
+       } catch {
+         setFormError("Gagal menyimpan transaksi");
+         return;
+       } finally {
+         setIsSubmitting(false);
+       }
 		 }
 
 		 clearForm();
@@ -146,8 +204,10 @@ export default function TransactionsPage() {
                 <label htmlFor="trxNote">Catatan</label>
                 <textarea id="trxNote" name="trxNote" rows={4} placeholder="Contoh: Pembayaran sewa kantor" value={formNote} onChange={(e) => setFormNote(e.target.value)} />
 
+				{formError && <p className="text-sm text-red-600">{formError}</p>}
+
                 <button type="submit" className="btn-primary btn-full" id="submitEntryBtn">
-                  {editingIndex != null ? "Simpan Perubahan" : "Simpan Transaksi"}
+                  {isSubmitting ? "Menyimpan..." : editingIndex != null ? "Simpan Perubahan" : "Simpan Transaksi"}
                 </button>
                 <button type="button" className="btn-ghost btn-full btn-cancel-edit" id="cancelEditBtn" onClick={handleCancelEdit}>
                   Batal

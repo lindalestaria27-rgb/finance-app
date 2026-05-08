@@ -1,6 +1,7 @@
 import React from 'react';
 
 export interface Transaction {
+  id?: string;
   date: string;
   category: 'income' | 'expense';
   note: string;
@@ -34,7 +35,7 @@ export default function TransactionTable({ transactions, onEdit, onDelete, editi
         const isIncome = trx.category === 'income';
         const displayAmount = Math.abs(trx.amount);
         return (
-          <tr key={idx} className={editingIndex === idx ? 'is-editing' : ''} data-date={trx.date} data-category={trx.category} data-note={trx.note} data-amount={trx.amount}>
+          <tr key={trx.id ?? `${trx.date}-${idx}`} className={editingIndex === idx ? 'is-editing' : ''} data-date={trx.date} data-category={trx.category} data-note={trx.note} data-amount={trx.amount}>
             <td>{formatDisplayDate(trx.date)}</td>
             <td><span className={`tag ${isIncome ? 'in' : 'out'}`}>{isIncome ? 'Pendapatan' : 'Pengeluaran'}</span></td>
             <td>{trx.note}</td>
