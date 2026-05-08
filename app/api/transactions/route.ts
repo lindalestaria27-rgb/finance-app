@@ -78,6 +78,15 @@ function normalizeCategory(category: string): 'in' | 'out' {
   return category === 'income' ? 'in' : category === 'expense' ? 'out' : (category as 'in' | 'out');
 }
 
+function convertDateToBackendFormat(isoDate: string): string {
+  // Convert YYYY-MM-DD to DD-MM-YYYY
+  const parts = isoDate.split('-');
+  if (parts.length === 3) {
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  return isoDate;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -177,7 +186,10 @@ export async function POST(request: Request) {
         Authorization: BACKEND_BEARER_TOKEN,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ...payload,
+        transaction_date: convertDateToBackendFormat(payload.transaction_date)
+      }),
       cache: 'no-store'
     });
 

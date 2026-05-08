@@ -27,7 +27,16 @@ function normalizeCategory(category: string): 'in' | 'out' {
   return category === 'income' ? 'in' : category === 'expense' ? 'out' : (category as 'in' | 'out');
 }
 
-export async function PUT(
+function convertDateToBackendFormat(isoDate: string): string {
+  // Convert YYYY-MM-DD to DD-MM-YYYY
+  const parts = isoDate.split('-');
+  if (parts.length === 3) {
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  return isoDate;
+}
+
+export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -56,12 +65,15 @@ export async function PUT(
     }
 
     const response = await fetch(`${BACKEND_BASE_URL}/transactions/${id}`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
         Authorization: BACKEND_BEARER_TOKEN,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ...payload,
+        transaction_date: convertDateToBackendFormat(payload.transaction_date)
+      }),
       cache: 'no-store'
     });
 
