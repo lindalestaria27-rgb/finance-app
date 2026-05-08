@@ -37,6 +37,7 @@ export async function GET() {
     });
 
     if (!response.ok) {
+      console.error('Backend transactions fetch failed with status', response.status);
       return NextResponse.json([], { status: response.status });
     }
 
