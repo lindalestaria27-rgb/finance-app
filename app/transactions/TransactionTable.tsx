@@ -13,6 +13,8 @@ interface Props {
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
   editingIndex: number | null;
+  pageNumber?: number;
+  pageSize?: number;
 }
 
 function formatDisplayDate(isoDate: string) {
@@ -28,14 +30,16 @@ function formatIdr(value: number) {
   return value.toLocaleString('id-ID');
 }
 
-export default function TransactionTable({ transactions, onEdit, onDelete, editingIndex }: Props) {
+export default function TransactionTable({ transactions, onEdit, onDelete, editingIndex, pageNumber = 1, pageSize = 10 }: Props) {
   return (
     <tbody>
       {transactions.map((trx, idx) => {
+        const rowNumber = (pageNumber - 1) * pageSize + idx + 1;
         const isIncome = trx.category === 'income';
         const displayAmount = Math.abs(trx.amount);
         return (
           <tr key={trx.id ?? `${trx.date}-${idx}`} className={editingIndex === idx ? 'is-editing' : ''} data-date={trx.date} data-category={trx.category} data-note={trx.note} data-amount={trx.amount}>
+            <td className="col-number">{rowNumber}</td>
             <td>{formatDisplayDate(trx.date)}</td>
             <td><span className={`tag ${isIncome ? 'in' : 'out'}`}>{isIncome ? 'Pendapatan' : 'Pengeluaran'}</span></td>
             <td>{trx.note}</td>

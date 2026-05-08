@@ -5,6 +5,20 @@ import TransactionTable, { Transaction } from "./TransactionTable";
 import Sidebar from "../components/Sidebar";
 import "./transactions.css";
 
+type TransactionsApiResponse = {
+  items: Transaction[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasPrev: boolean;
+    hasNext: boolean;
+  };
+};
+
+type PaginationItem = number | "ellipsis";
+
 export default function TransactionsPage() {
 	 const [transactions, setTransactions] = useState<Transaction[]>([]);
 	 const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -12,6 +26,11 @@ export default function TransactionsPage() {
 	 const [pendingDeleteIndex, setPendingDeleteIndex] = useState<number | null>(null);
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [formError, setFormError] = useState("");
+   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+   const [currentPage, setCurrentPage] = useState(1);
+   const [pageSize, setPageSize] = useState(10);
+   const [totalItems, setTotalItems] = useState(0);
+   const [totalPages, setTotalPages] = useState(1);
 
 	 const dateRef = useRef<HTMLInputElement | null>(null);
 
@@ -20,19 +39,29 @@ export default function TransactionsPage() {
 	 const [formAmount, setFormAmount] = useState<number | string>("");
 	 const [formNote, setFormNote] = useState("");
 
-   async function loadTransactions() {
+   async function loadTransactions(page: number) {
      try {
-       const response = await fetch("/api/transactions", { cache: "no-store" });
-       const data = (await response.json()) as Transaction[];
-       setTransactions(data);
+       setIsLoadingTransactions(true);
+       const response = await fetch(`/api/transactions?page=${page}&limit=${pageSize}`, { cache: "no-store" });
+       const data = (await response.json()) as TransactionsApiResponse;
+       setTransactions(data.items ?? []);
+       setCurrentPage(data.pagination?.page ?? page);
+       setPageSize(data.pagination?.limit ?? pageSize);
+       setTotalItems(data.pagination?.total ?? 0);
+       setTotalPages(data.pagination?.totalPages ?? 1);
      } catch {
        setTransactions([]);
+       setCurrentPage(1);
+       setTotalItems(0);
+       setTotalPages(1);
+     } finally {
+       setIsLoadingTransactions(false);
      }
    }
 
    useEffect(() => {
-     void loadTransactions();
-   }, []);
+     void loadTransactions(currentPage);
+   }, [currentPage]);
 
 	 function clearForm() {
 		 setFormDate("");
@@ -121,16 +150,8 @@ export default function TransactionsPage() {
            return;
          }
 
-         setTransactions((prev) => [
-           {
-             id: data.id,
-             date: data.transaction_date ?? formDate,
-             category: data.category === "in" ? "income" : "expense",
-             note: data.note ?? formNote,
-             amount: Math.abs(Number(data.amount ?? amountNumber))
-           },
-           ...prev
-         ]);
+         setCurrentPage(1);
+         await loadTransactions(1);
        } catch {
          setFormError("Gagal menyimpan transaksi");
          return;
@@ -147,6 +168,45 @@ export default function TransactionsPage() {
 		 clearForm();
 		 setIsAdding(false);
 	 }
+
+  function goToPrevPage() {
+    if (currentPage > 1 && !isLoadingTransactions) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  }
+
+  function goToNextPage() {
+    if (currentPage < totalPages && !isLoadingTransactions) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }
+
+  function buildPaginationItems(page: number, pages: number): PaginationItem[] {
+    if (pages <= 7) {
+      return Array.from({ length: pages }, (_, index) => index + 1);
+    }
+
+    const items: PaginationItem[] = [1];
+    const start = Math.max(2, page - 1);
+    const end = Math.min(pages - 1, page + 1);
+
+    if (start > 2) {
+      items.push("ellipsis");
+    }
+
+    for (let value = start; value <= end; value += 1) {
+      items.push(value);
+    }
+
+    if (end < pages - 1) {
+      items.push("ellipsis");
+    }
+
+    items.push(pages);
+    return items;
+  }
+
+  const paginationItems = buildPaginationItems(currentPage, totalPages);
 
   return (
     <div className="page-shell">
@@ -218,12 +278,16 @@ export default function TransactionsPage() {
 
           <article className={`panel ledger ${!isAdding ? 'full-ledger' : ''}`}>
             <div className="ledger-head">
-              <h3>Daftar Transaksi</h3>
+              <div>
+                <h3>Daftar Transaksi</h3>
+                <p className="ledger-summary">Total transaksi: {totalItems}</p>
+              </div>
             </div>
             <div className="table-wrap">
               <table id="transactionTable">
                 <thead>
                   <tr>
+                    <th className="col-header-number">No.</th>
                     <th>Tanggal</th>
                     <th>Kategori</th>
                     <th>Catatan</th>
@@ -231,8 +295,57 @@ export default function TransactionsPage() {
                     <th>Aksi</th>
                   </tr>
                 </thead>
-                <TransactionTable transactions={transactions} onEdit={handleEdit} onDelete={handleDelete} editingIndex={editingIndex} />
+                <TransactionTable transactions={transactions} onEdit={handleEdit} onDelete={handleDelete} editingIndex={editingIndex} pageNumber={currentPage} pageSize={pageSize} />
               </table>
+            </div>
+            <div className="pagination-bar" aria-live="polite">
+              <nav className="pagination-controls" aria-label="Navigasi halaman transaksi">
+                <button
+                  type="button"
+                  className="pager-btn pager-arrow"
+                  onClick={goToPrevPage}
+                  disabled={currentPage <= 1 || isLoadingTransactions}
+                  aria-label="Halaman sebelumnya"
+                >
+                  ‹
+                </button>
+
+                <div className="pager-list">
+                  {paginationItems.map((item, index) => {
+                    if (item === "ellipsis") {
+                      return (
+                        <span className="pager-ellipsis" key={`ellipsis-${index}`} aria-hidden="true">
+                          ...
+                        </span>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={`page-${item}`}
+                        type="button"
+                        className={`pager-btn pager-number ${item === currentPage ? "is-active" : ""}`}
+                        onClick={() => setCurrentPage(item)}
+                        disabled={isLoadingTransactions}
+                        aria-current={item === currentPage ? "page" : undefined}
+                        aria-label={`Halaman ${item}`}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  className="pager-btn pager-arrow"
+                  onClick={goToNextPage}
+                  disabled={currentPage >= totalPages || isLoadingTransactions}
+                  aria-label="Halaman berikutnya"
+                >
+                  ›
+                </button>
+              </nav>
             </div>
           </article>
         </section>

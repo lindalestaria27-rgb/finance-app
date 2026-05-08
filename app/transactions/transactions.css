@@ -222,6 +222,11 @@ html.sidebar-collapsed-preload .page-shell .sidebar-toggle {
   color: #365ea9;
 }
 
+.btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .btn-primary {
   background: linear-gradient(140deg, #061b4d, #0c2f72);
   color: #f6f9ff;
@@ -339,11 +344,91 @@ html.sidebar-collapsed-preload .page-shell .sidebar-toggle {
   margin-top: 8px;
 }
 
+.form-error {
+  margin: 10px 0 0;
+  color: #b53f52;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
 .ledger-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 10px;
+}
+
+.ledger-summary {
+  margin: 6px 0 0;
+  color: #60739f;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pager-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagination-bar {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pager-btn {
+  border: 1px solid #d9e2f4;
+  background: #f7faff;
+  color: #365ea9;
+  border-radius: 9px;
+  height: 35px;
+  padding: 0 11px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pager-number {
+  min-width: 35px;
+}
+
+.pager-number.is-active {
+  background: linear-gradient(140deg, #061b4d, #0c2f72);
+  border-color: #0c2f72;
+  color: #f6f9ff;
+}
+
+.pager-arrow {
+  min-width: 35px;
+  font-size: 0.95rem;
+}
+
+.pager-ellipsis {
+  color: #6f81aa;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0 2px;
+}
+
+.pager-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-text {
+  color: #60739f;
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .ledger-filters {
@@ -388,6 +473,14 @@ td {
   font-size: 0.76rem;
   padding: 10px 8px;
   border-bottom: 1px solid #e8eef8;
+}
+
+.col-header-number,
+.col-number {
+  text-align: center;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
 }
 
 th {
