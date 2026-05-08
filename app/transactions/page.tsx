@@ -38,6 +38,7 @@ export default function TransactionsPage() {
 	 const [formCategory, setFormCategory] = useState<"income" | "expense" | "">("");
 	 const [formAmount, setFormAmount] = useState<number | string>("");
 	 const [formNote, setFormNote] = useState("");
+	 const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
 
    async function loadTransactions(page: number) {
      try {
@@ -70,6 +71,7 @@ export default function TransactionsPage() {
 		 setFormNote("");
      setFormError("");
 		 setEditingIndex(null);
+		 setEditingTransactionId(null);
 	 }
 
 	 function openAdd() {
@@ -82,6 +84,7 @@ export default function TransactionsPage() {
 		 const t = transactions[index];
 		 setEditingIndex(index);
 		 setIsAdding(true);
+		 setEditingTransactionId(t.id ?? null);
 		 setFormDate(t.date);
 		 setFormCategory(t.category);
 		 setFormAmount(t.amount);
@@ -112,11 +115,51 @@ export default function TransactionsPage() {
      setFormError("");
 
 		 if (editingIndex != null) {
-			 setTransactions((prev) => {
-				 const copy = [...prev];
-				 copy[editingIndex] = { date: formDate, category: formCategory as Transaction["category"], note: formNote, amount: amountNumber };
-				 return copy;
-			 });
+       if (!editingTransactionId) {
+         setFormError("ID transaksi tidak ditemukan");
+         return;
+       }
+
+       setIsSubmitting(true);
+       try {
+         const response = await fetch(`/api/transactions/${editingTransactionId}`, {
+           method: "PUT",
+           headers: {
+             "Content-Type": "application/json"
+           },
+           body: JSON.stringify({
+             amount: amountNumber,
+             category: formCategory === "income" ? "in" : "out",
+             transaction_date: formDate,
+             note: formNote
+           })
+         });
+
+         const data = (await response.json().catch(() => null)) as
+           | {
+             success?: boolean;
+             server_message?: string;
+             detail?: string;
+             id?: string;
+             amount?: number;
+             category?: "in" | "out";
+             transaction_date?: string;
+             note?: string;
+           }
+           | null;
+
+         if (!response.ok || !data?.success) {
+           setFormError(data?.server_message ?? data?.detail ?? "Gagal mengubah transaksi");
+           return;
+         }
+
+         await loadTransactions(currentPage);
+       } catch {
+         setFormError("Gagal mengubah transaksi");
+         return;
+       } finally {
+         setIsSubmitting(false);
+       }
 		 } else {
        setIsSubmitting(true);
        try {

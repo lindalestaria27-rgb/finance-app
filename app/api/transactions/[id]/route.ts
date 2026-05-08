@@ -1,0 +1,91 @@
+import { NextResponse } from 'next/server';
+
+const BACKEND_BASE_URL = process.env.FINANCE_API_BASE_URL ?? 'https://fin-management-backend.orangewave-4f1698d3.eastasia.azurecontainerapps.io';
+const BACKEND_BEARER_TOKEN = process.env.FINANCE_API_BEARER_TOKEN ?? 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcl9pZCI6IjBlMDAwMDcxLTRlYTMtNGUyMy05MzhmLWI4Y2RlZmQ0ODliZSIsInJvbGUiOiJzdGFmZiIsImV4cCI6MTc3ODIyNDc2M30.vVG5eWgbZJOCUiT3UZ6kedaLAAPbpcUbivswbiNGkuE';
+
+type UpdateTransactionPayload = {
+  amount: number;
+  category: 'in' | 'out';
+  transaction_date: string;
+  note: string;
+};
+
+type BackendUpdateTransactionResponse = {
+  success?: boolean;
+  server_message?: string;
+  detail?: string;
+  id?: string;
+  amount?: number;
+  category?: 'in' | 'out';
+  transaction_date?: string;
+  note?: string;
+  organization_id?: string;
+  created_at?: string;
+};
+
+function normalizeCategory(category: string): 'in' | 'out' {
+  return category === 'income' ? 'in' : category === 'expense' ? 'out' : (category as 'in' | 'out');
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    const body = (await request.json()) as Partial<UpdateTransactionPayload> & {
+      category?: 'in' | 'out' | 'income' | 'expense';
+    };
+
+    const payload: UpdateTransactionPayload = {
+      amount: Number(body.amount ?? 0),
+      category: normalizeCategory(body.category ?? 'out'),
+      transaction_date: body.transaction_date ?? '',
+      note: body.note ?? ''
+    };
+
+    if (!payload.transaction_date || !payload.note || payload.amount <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          server_message: 'Data transaksi tidak valid'
+        } satisfies BackendUpdateTransactionResponse,
+        { status: 400 }
+      );
+    }
+
+    const response = await fetch(`${BACKEND_BASE_URL}/transactions/${id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: BACKEND_BEARER_TOKEN,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+      cache: 'no-store'
+    });
+
+    const data = (await response.json().catch(() => null)) as BackendUpdateTransactionResponse | null;
+
+    if (!data) {
+      return NextResponse.json(
+        {
+          success: false,
+          server_message: 'Backend response tidak valid'
+        } satisfies BackendUpdateTransactionResponse,
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    console.error('Failed to update transaction', error);
+    return NextResponse.json(
+      {
+        success: false,
+        server_message: 'Gagal mengubah transaksi'
+      } satisfies BackendUpdateTransactionResponse,
+      { status: 500 }
+    );
+  }
+}
