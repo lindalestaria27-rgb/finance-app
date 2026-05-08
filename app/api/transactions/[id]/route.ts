@@ -64,10 +64,12 @@ export async function PATCH(
       );
     }
 
+    // Forward Authorization header from client if present
+    const authHeader = request.headers.get('authorization') || BACKEND_BEARER_TOKEN;
     const response = await fetch(`${BACKEND_BASE_URL}/transactions/${id}`, {
       method: 'PATCH',
       headers: {
-        Authorization: BACKEND_BEARER_TOKEN,
+        Authorization: authHeader,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -117,10 +119,12 @@ export async function DELETE(
   try {
     const { id } = await params;
 
+    // Forward Authorization header from client if present
+    const authHeader = request.headers.get('authorization') || BACKEND_BEARER_TOKEN;
     const response = await fetch(`${BACKEND_BASE_URL}/transactions/${id}`, {
       method: 'DELETE',
       headers: {
-        Authorization: BACKEND_BEARER_TOKEN
+        Authorization: authHeader
       },
       cache: 'no-store'
     });

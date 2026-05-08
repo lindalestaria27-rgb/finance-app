@@ -93,9 +93,11 @@ export async function GET(request: Request) {
     const page = Math.max(1, Number(searchParams.get('page') ?? 1) || 1);
     const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 10) || 10));
 
+    // Forward Authorization header from client if present
+    const authHeader = request.headers.get('authorization') || BACKEND_BEARER_TOKEN;
     const response = await fetch(`${BACKEND_BASE_URL}/transactions?page=${page}&limit=${limit}`, {
       headers: {
-        Authorization: BACKEND_BEARER_TOKEN
+        Authorization: authHeader
       },
       cache: 'no-store'
     });
@@ -180,10 +182,12 @@ export async function POST(request: Request) {
       );
     }
 
+    // Forward Authorization header from client if present
+    const authHeader = request.headers.get('authorization') || BACKEND_BEARER_TOKEN;
     const response = await fetch(`${BACKEND_BASE_URL}/transactions`, {
       method: 'POST',
       headers: {
-        Authorization: BACKEND_BEARER_TOKEN,
+        Authorization: authHeader,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({

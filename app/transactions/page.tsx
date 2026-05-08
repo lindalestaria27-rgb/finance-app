@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/app/context/AuthContext";
 import TransactionTable, { Transaction } from "./TransactionTable";
 import Sidebar from "../components/Sidebar";
 import "./transactions.css";
@@ -20,6 +21,7 @@ type TransactionsApiResponse = {
 type PaginationItem = number | "ellipsis";
 
 export default function TransactionsPage() {
+    const { token } = useAuth();
 	 const [transactions, setTransactions] = useState<Transaction[]>([]);
 	 const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	 const [isAdding, setIsAdding] = useState(false);
@@ -44,7 +46,10 @@ export default function TransactionsPage() {
    async function loadTransactions(page: number) {
      try {
        setIsLoadingTransactions(true);
-       const response = await fetch(`/api/transactions?page=${page}&limit=${pageSize}`, { cache: "no-store" });
+       const response = await fetch(`/api/transactions?page=${page}&limit=${pageSize}`, {
+         cache: "no-store",
+         headers: token ? { Authorization: `Bearer ${token}` } : undefined
+       });
        const data = (await response.json()) as TransactionsApiResponse;
        setTransactions(data.items ?? []);
        setCurrentPage(data.pagination?.page ?? page);
@@ -108,12 +113,13 @@ export default function TransactionsPage() {
 		 }
 
 		 setIsDeletingTransaction(true);
-		 fetch(`/api/transactions/${transactionToDelete.id}`, {
-		   method: "DELETE",
-		   headers: {
-		     "Content-Type": "application/json"
-		   }
-		 })
+     fetch(`/api/transactions/${transactionToDelete.id}`, {
+       method: "DELETE",
+       headers: {
+         "Content-Type": "application/json",
+         ...(token ? { Authorization: `Bearer ${token}` } : {})
+       }
+     })
 		   .then(async (response) => {
 		     const data = (await response.json().catch(() => null)) as
 		       | {
@@ -162,7 +168,8 @@ export default function TransactionsPage() {
          const response = await fetch(`/api/transactions/${editingTransactionId}`, {
            method: "PATCH",
            headers: {
-             "Content-Type": "application/json"
+             "Content-Type": "application/json",
+             ...(token ? { Authorization: `Bearer ${token}` } : {})
            },
            body: JSON.stringify({
              amount: amountNumber,
@@ -203,7 +210,8 @@ export default function TransactionsPage() {
          const response = await fetch("/api/transactions", {
            method: "POST",
            headers: {
-             "Content-Type": "application/json"
+             "Content-Type": "application/json",
+             ...(token ? { Authorization: `Bearer ${token}` } : {})
            },
            body: JSON.stringify({
              amount: amountNumber,
