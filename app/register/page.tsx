@@ -208,11 +208,6 @@ export default function RegisterPage() {
               )}
 
             <div>
-              <label htmlFor="fullName">Nama Lengkap</label>
-              <input id="fullName" name="fullName" type="text" placeholder="contoh: Akbar Palekori" required />
-            </div>
-
-            <div>
               <label htmlFor="username">Username</label>
               <input id="username" name="username" type="text" placeholder="contoh: akbar.admin" required value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
