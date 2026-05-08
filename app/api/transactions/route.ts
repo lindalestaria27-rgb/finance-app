@@ -277,7 +277,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          server_message: validation.error
+          server_message: validation.error ?? 'Data transaksi tidak valid'
         } satisfies BackendCreateTransactionResponse,
         { status: 400 }
       );
