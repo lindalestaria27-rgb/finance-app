@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const BACKEND_BASE_URL = process.env.FINANCE_API_BASE_URL ?? 'https://fin-management-backend.orangewave-4f1698d3.eastasia.azurecontainerapps.io';
-const BACKEND_BEARER_TOKEN = process.env.FINANCE_API_BEARER_TOKEN ?? 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcl9pZCI6IjBlMDAwMDcxLTRlYTMtNGUyMy05MzhmLWI4Y2RlZmQ0ODliZSIsInJvbGUiOiJzdGFmZiIsImV4cCI6MTc3ODIyMDk5Nn0.cj3GaegwdVRUkiE6fO1NwNibnAYUd7l0ivT_tEwJJIU';
+const BACKEND_BEARER_TOKEN = process.env.FINANCE_API_BEARER_TOKEN ?? 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcl9pZCI6IjBlMDAwMDcxLTRlYTMtNGUyMy05MzhmLWI4Y2RlZmQ0ODliZSIsInJvbGUiOiJzdGFmZiIsImV4cCI6MTc3ODIyNDc2M30.vVG5eWgbZJOCUiT3UZ6kedaLAAPbpcUbivswbiNGkuE';
 
 type BackendTransaction = {
   id: string;
@@ -38,6 +38,32 @@ type BackendCreateTransactionResponse = {
   created_at?: string;
 };
 
+type BackendTransactionsListResponse = {
+  items?: BackendTransaction[];
+  page?: number;
+  limit?: number;
+  total?: number;
+  total_pages?: number;
+  pagination?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    total_pages?: number;
+  };
+};
+
+type TransactionsListResponse = {
+  items: UiTransaction[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasPrev: boolean;
+    hasNext: boolean;
+  };
+};
+
 function mapTransaction(transaction: BackendTransaction): UiTransaction {
   return {
     id: transaction.id,
@@ -52,9 +78,13 @@ function normalizeCategory(category: string): 'in' | 'out' {
   return category === 'income' ? 'in' : category === 'expense' ? 'out' : (category as 'in' | 'out');
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const response = await fetch(`${BACKEND_BASE_URL}/transactions?page=1&limit=10`, {
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, Number(searchParams.get('page') ?? 1) || 1);
+    const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 10) || 10));
+
+    const response = await fetch(`${BACKEND_BASE_URL}/transactions?page=${page}&limit=${limit}`, {
       headers: {
         Authorization: BACKEND_BEARER_TOKEN
       },
@@ -63,14 +93,58 @@ export async function GET() {
 
     if (!response.ok) {
       console.error('Backend transactions fetch failed with status', response.status);
-      return NextResponse.json([], { status: response.status });
+      return NextResponse.json(
+        {
+          items: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 1,
+            hasPrev: false,
+            hasNext: false
+          }
+        } satisfies TransactionsListResponse,
+        { status: response.status }
+      );
     }
 
-    const data: { items?: BackendTransaction[] } = await response.json();
-    return NextResponse.json((data.items ?? []).map(mapTransaction));
+    const data = (await response.json()) as BackendTransactionsListResponse;
+
+    const rawPage = data.pagination?.page ?? data.page ?? page;
+    const rawLimit = data.pagination?.limit ?? data.limit ?? limit;
+    const rawTotal = data.pagination?.total ?? data.total ?? 0;
+    const rawTotalPages = data.pagination?.total_pages ?? data.total_pages ?? Math.max(1, Math.ceil(rawTotal / Math.max(1, rawLimit)));
+
+    const normalizedPage = Math.max(1, Number(rawPage) || 1);
+    const normalizedLimit = Math.max(1, Number(rawLimit) || limit);
+    const normalizedTotal = Math.max(0, Number(rawTotal) || 0);
+    const normalizedTotalPages = Math.max(1, Number(rawTotalPages) || 1);
+
+    return NextResponse.json({
+      items: (data.items ?? []).map(mapTransaction),
+      pagination: {
+        page: normalizedPage,
+        limit: normalizedLimit,
+        total: normalizedTotal,
+        totalPages: normalizedTotalPages,
+        hasPrev: normalizedPage > 1,
+        hasNext: normalizedPage < normalizedTotalPages
+      }
+    } satisfies TransactionsListResponse);
   } catch (error) {
     console.error('Failed to load transactions', error);
-    return NextResponse.json([]);
+    return NextResponse.json({
+      items: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1,
+        hasPrev: false,
+        hasNext: false
+      }
+    } satisfies TransactionsListResponse);
   }
 }
 
