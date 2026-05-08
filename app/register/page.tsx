@@ -2,10 +2,91 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role] = useState("staff");
+  const [organizationId] = useState("ca5196b5-479b-4559-8f44-867d053d7fc5");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    // Validation
+    if (!username || !email || !password || !confirmPassword) {
+      setError("Semua field harus diisi");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Kata sandi tidak cocok");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Kata sandi minimal 6 karakter");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Email tidak valid");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          role,
+          organization_id: organizationId
+        })
+      });
+
+      const data = (await response.json()) as
+        | {
+            success?: boolean;
+            server_message?: string;
+            detail?: string;
+            id?: string;
+            username?: string;
+            email?: string;
+          }
+        | null;
+
+      if (!response.ok || !data?.success) {
+        setError(data?.server_message ?? data?.detail ?? "Gagal mendaftar");
+        return;
+      }
+
+      setSuccess("Akun berhasil dibuat! Redirecting ke login...");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } catch {
+      setError("Gagal mendaftar akun");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -73,19 +154,19 @@ export default function RegisterPage() {
           </p>
 
           {/* FORM */}
-          <form className="flex flex-col text-gray-700 gap-4">
+          <form className="flex flex-col text-gray-700 gap-4" onSubmit={handleSubmit}>
 
-            {/* Nama */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Nama Lengkap
-              </label>
-              <input
-                type="text"
-                placeholder="contoh: Akbar Palekori"
-                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
-              />
-            </div>
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                {success}
+              </div>
+            )}
 
             {/* Username */}
             <div>
@@ -95,7 +176,10 @@ export default function RegisterPage() {
               <input
                 type="text"
                 placeholder="contoh: akbar.admin"
-                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
+                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -107,7 +191,10 @@ export default function RegisterPage() {
               <input
                 type="email"
                 placeholder="contoh: admin@financecontrol.com"
-                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -120,14 +207,18 @@ export default function RegisterPage() {
               <div className="relative mt-1">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Minimal 8 karakter"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                  placeholder="Minimal 6 karakter"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400"
+                  disabled={isLoading}
+                  className="absolute right-3 top-3 text-gray-400 disabled:opacity-50"
                 >
                   {showPassword ? "🙈" : "👁️"}
                 </button>
@@ -144,13 +235,17 @@ export default function RegisterPage() {
                 <input
                   type={showConfirm ? "text" : "password"}
                   placeholder="Masukkan ulang kata sandi"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-3 text-gray-400"
+                  disabled={isLoading}
+                  className="absolute right-3 top-3 text-gray-400 disabled:opacity-50"
                 >
                   {showConfirm ? "🙈" : "👁️"}
                 </button>
@@ -160,9 +255,10 @@ export default function RegisterPage() {
             {/* Button */}
             <button
               type="submit"
-              className="mt-2 bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition"
+              disabled={isLoading}
+              className="mt-2 bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Buat Akun
+              {isLoading ? "Mendaftar..." : "Buat Akun"}
             </button>
           </form>
 
