@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rental Finance Control - Transaksi</title>
+  <script>
+    try {
+      if (localStorage.getItem("rfc-sidebar-collapsed") === "1") {
+        document.documentElement.classList.add("sidebar-collapsed-preload");
+      }
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="transactions.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">F</div>
+        <div class="brand-meta">
+          <p class="brand-title">RENTAL FINANCE CONTROL</p>
+          <p class="brand-sub">Sistem Manajemen Rental Mobil</p>
+        </div>
+      </div>
+
+      <button class="sidebar-toggle" type="button" aria-label="Tampilkan atau sembunyikan sidebar" aria-expanded="true">‹</button>
+
+      <nav class="nav">
+        <a href="dashboard.html" class="nav-link"><span class="nav-icon">▦</span><span class="nav-text">Dasbor</span></a>
+        <a href="transactions.html" class="nav-link active"><span class="nav-icon">↹</span><span class="nav-text">Transaksi</span></a>
+        <a href="reports.html" class="nav-link"><span class="nav-icon">▤</span><span class="nav-text">Laporan</span></a>
+        <a href="prediction.html" class="nav-link"><span class="nav-icon">◔</span><span class="nav-text">Prediksi</span></a>
+      </nav>
+
+    </aside>
+
+    <main class="main-content">
+      <header class="page-head">
+        <div>
+          <p class="eyebrow">Intelijen Keuangan</p>
+          <h1>Manajemen Transaksi</h1>
+          <p class="subtitle">Input dan kelola pemasukan/pengeluaran secara terstruktur.</p>
+        </div>
+
+        <div class="head-actions">
+          <a class="btn-primary" href="transactions-import.html">Impor Data</a>
+          <button class="btn-primary" type="button">+ Tambah Transaksi</button>
+        </div>
+      </header>
+
+      <section class="transaction-grid">
+        <article class="panel quick-entry">
+          <h3 id="entryTitle">Input Cepat</h3>
+
+          <form action="#" method="post" class="entry-form" id="entryForm">
+            <label for="trxDate">Tanggal Transaksi</label>
+            <input id="trxDate" name="trxDate" type="date" required />
+
+            <label for="trxCategory">Kategori</label>
+            <select id="trxCategory" name="trxCategory" required>
+              <option value="">Pilih kategori</option>
+              <option value="income">Pendapatan</option>
+              <option value="expense">Pengeluaran</option>
+            </select>
+
+            <label for="trxAmount">Nominal (Rupiah)</label>
+            <input id="trxAmount" name="trxAmount" type="number" min="1" step="1" placeholder="0" required />
+
+            <label for="trxNote">Catatan</label>
+            <textarea id="trxNote" name="trxNote" rows="4" placeholder="Contoh: Pembayaran sewa kantor"></textarea>
+
+            <button type="submit" class="btn-primary btn-full" id="submitEntryBtn">Simpan Transaksi</button>
+            <button type="button" class="btn-ghost btn-full btn-cancel-edit" id="cancelEditBtn" hidden>Batal Edit</button>
+          </form>
+        </article>
+
+        <article class="panel ledger">
+          <div class="ledger-head">
+            <h3>Daftar Transaksi</h3>
+          </div>
+
+          <div class="table-wrap">
+            <table id="transactionTable">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Kategori</th>
+                  <th>Catatan</th>
+                  <th>Nominal</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-date="2026-04-11" data-category="income" data-note="Pemesanan Korporat - PT Venture Capital" data-amount="199200000">
+                  <td>11 Apr 2026</td>
+                  <td><span class="tag in">Pendapatan</span></td>
+                  <td>Pemesanan Korporat - PT Venture Capital</td>
+                  <td class="amount pos">+Rp199.200.000</td>
+                  <td class="actions"><button type="button" class="edit-btn">Ubah</button><button type="button" class="danger delete-btn">Hapus</button></td>
+                </tr>
+                <tr data-date="2026-04-10" data-category="expense" data-note="Sewa Kantor - District 5" data-amount="83200000">
+                  <td>10 Apr 2026</td>
+                  <td><span class="tag out">Pengeluaran</span></td>
+                  <td>Sewa Kantor - District 5</td>
+                  <td class="amount neg">-Rp83.200.000</td>
+                  <td class="actions"><button type="button" class="edit-btn">Ubah</button><button type="button" class="danger delete-btn">Hapus</button></td>
+                </tr>
+                <tr data-date="2026-04-10" data-category="expense" data-note="Isi Ulang BBM - Armada Batch A" data-amount="18400000">
+                  <td>10 Apr 2026</td>
+                  <td><span class="tag out">Pengeluaran</span></td>
+                  <td>Isi Ulang BBM - Armada Batch A</td>
+                  <td class="amount neg">-Rp18.400.000</td>
+                  <td class="actions"><button type="button" class="edit-btn">Ubah</button><button type="button" class="danger delete-btn">Hapus</button></td>
+                </tr>
+                <tr data-date="2026-04-09" data-category="income" data-note="Kontrak Mingguan - Medion Ave" data-amount="142400000">
+                  <td>09 Apr 2026</td>
+                  <td><span class="tag in">Pendapatan</span></td>
+                  <td>Kontrak Mingguan - Medion Ave</td>
+                  <td class="amount pos">+Rp142.400.000</td>
+                  <td class="actions"><button type="button" class="edit-btn">Ubah</button><button type="button" class="danger delete-btn">Hapus</button></td>
+                </tr>
+                <tr data-date="2026-04-08" data-category="income" data-note="Paket Antar Jemput Bandara" data-amount="89600000">
+                  <td>08 Apr 2026</td>
+                  <td><span class="tag in">Pendapatan</span></td>
+                  <td>Paket Antar Jemput Bandara</td>
+                  <td class="amount pos">+Rp89.600.000</td>
+                  <td class="actions"><button type="button" class="edit-btn">Ubah</button><button type="button" class="danger delete-btn">Hapus</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="deleteModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+      <h3 id="deleteModalTitle">Konfirmasi Hapus</h3>
+      <p>Yakin ingin menghapus transaksi ini?</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="deleteNoBtn">Tidak</button>
+        <button type="button" class="btn-danger" id="deleteYesBtn">Ya</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script src="transactions.js"></script>
+</body>
+</html>

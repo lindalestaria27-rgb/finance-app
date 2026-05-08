@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rental Finance Control - Prediksi</title>
+  <script>
+    try {
+      if (localStorage.getItem("rfc-sidebar-collapsed") === "1") {
+        document.documentElement.classList.add("sidebar-collapsed-preload");
+      }
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="prediction.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">F</div>
+        <div class="brand-meta">
+          <p class="brand-title">RENTAL FINANCE CONTROL</p>
+          <p class="brand-sub">Sistem Manajemen Rental Mobil</p>
+        </div>
+      </div>
+
+      <button class="sidebar-toggle" type="button" aria-label="Tampilkan atau sembunyikan sidebar" aria-expanded="true">‹</button>
+
+      <nav class="nav">
+        <a href="dashboard.html" class="nav-link"><span class="nav-icon">▦</span><span class="nav-text">Dasbor</span></a>
+        <a href="transactions.html" class="nav-link"><span class="nav-icon">↹</span><span class="nav-text">Transaksi</span></a>
+        <a href="reports.html" class="nav-link"><span class="nav-icon">▤</span><span class="nav-text">Laporan</span></a>
+        <a href="prediction.html" class="nav-link active"><span class="nav-icon">◔</span><span class="nav-text">Prediksi</span></a>
+      </nav>
+
+    </aside>
+
+    <main class="main-content">
+      <header class="page-head">
+        <div>
+          <p class="eyebrow">Intelijen Keuangan</p>
+          <h1>Prediksi Pendapatan</h1>
+          <p class="subtitle">Prediksi pendapatan bulan berikutnya berdasarkan data historis.</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn-primary" type="button">Jalankan Prediksi</button>
+        </div>
+      </header>
+
+      <section class="metric-grid">
+        <article class="metric-card highlight">
+          <p>Prediksi Pendapatan (Bulan Depan)</p>
+          <h2>Rp47.123.200.000</h2>
+          <span>Periode prediksi: Nov 2026</span>
+        </article>
+        <article class="metric-card">
+          <p>Data Historis Digunakan</p>
+          <h2>6 Bulan</h2>
+          <span>Mei 2026 - Okt 2026</span>
+        </article>
+        <article class="metric-card">
+          <p>Akurasi Model (MAPE)</p>
+          <h2>8.7%</h2>
+          <span>Target maksimum 20%</span>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Tren Aktual vs Prediksi</h3>
+              <p>Hasil model terhadap pendapatan historis bulanan</p>
+            </div>
+            <div class="legend">
+              <span><i class="dot actual"></i>Aktual</span>
+              <span><i class="dot predicted"></i>Prediksi</span>
+            </div>
+          </div>
+
+          <div class="line-chart" aria-hidden="true">
+            <svg viewBox="0 0 760 280" preserveAspectRatio="none">
+              <g class="grid-lines">
+                <line x1="20" y1="232" x2="744" y2="232"></line>
+                <line x1="20" y1="186" x2="744" y2="186"></line>
+                <line x1="20" y1="140" x2="744" y2="140"></line>
+                <line x1="20" y1="94" x2="744" y2="94"></line>
+                <line x1="20" y1="48" x2="744" y2="48"></line>
+              </g>
+
+              <polyline class="actual-line" points="62,200 132,184 202,176 272,162 342,150 412,142"></polyline>
+              <polyline class="pred-line" points="412,142 482,122"></polyline>
+
+              <g class="axis-labels">
+                <text x="62" y="264">Mei</text>
+                <text x="132" y="264">Jun</text>
+                <text x="202" y="264">Jul</text>
+                <text x="272" y="264">Agu</text>
+                <text x="342" y="264">Sep</text>
+                <text x="412" y="264">Okt</text>
+                <text x="482" y="264">Nov*</text>
+              </g>
+            </svg>
+          </div>
+        </article>
+
+        <article class="panel side-panel">
+          <h3>Input Historis (Dummy)</h3>
+          <div class="history-table-wrap">
+            <table class="history-table" aria-label="Data historis 6 bulan">
+              <thead>
+                <tr>
+                  <th>Bulan</th>
+                  <th>Pendapatan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Mei 2026</td><td>Rp35.360.000.000</td></tr>
+                <tr><td>Jun 2026</td><td>Rp38.080.000.000</td></tr>
+                <tr><td>Jul 2026</td><td>Rp39.520.000.000</td></tr>
+                <tr><td>Agu 2026</td><td>Rp41.760.000.000</td></tr>
+                <tr><td>Sep 2026</td><td>Rp44.160.000.000</td></tr>
+                <tr><td>Okt 2026</td><td>Rp45.440.000.000</td></tr>
+                <tr><td>Nov 2025</td><td>Rp31.360.000.000</td></tr>
+                <tr><td>Des 2025</td><td>Rp32.800.000.000</td></tr>
+                <tr><td>Jan 2026</td><td>Rp33.280.000.000</td></tr>
+                <tr><td>Feb 2026</td><td>Rp34.240.000.000</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="status good">
+            <p>Status Prediksi</p>
+            <strong>Data historis memenuhi syarat minimal 6 bulan</strong>
+            <span>Prediksi Nov 2026 dapat ditampilkan.</span>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+  <script src="sidebar.js"></script>
+</body>
+</html>

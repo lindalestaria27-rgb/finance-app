@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rental Finance Control - Laporan</title>
+  <script>
+    try {
+      if (localStorage.getItem("rfc-sidebar-collapsed") === "1") {
+        document.documentElement.classList.add("sidebar-collapsed-preload");
+      }
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="reports.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">F</div>
+        <div class="brand-meta">
+          <p class="brand-title">RENTAL FINANCE CONTROL</p>
+          <p class="brand-sub">Sistem Manajemen Rental Mobil</p>
+        </div>
+      </div>
+
+      <button class="sidebar-toggle" type="button" aria-label="Tampilkan atau sembunyikan sidebar" aria-expanded="true">‹</button>
+
+      <nav class="nav">
+        <a href="dashboard.html" class="nav-link"><span class="nav-icon">▦</span><span class="nav-text">Dasbor</span></a>
+        <a href="transactions.html" class="nav-link"><span class="nav-icon">↹</span><span class="nav-text">Transaksi</span></a>
+        <a href="reports.html" class="nav-link active"><span class="nav-icon">▤</span><span class="nav-text">Laporan</span></a>
+        <a href="prediction.html" class="nav-link"><span class="nav-icon">◔</span><span class="nav-text">Prediksi</span></a>
+      </nav>
+
+    </aside>
+
+    <main class="main-content">
+      <header class="page-head">
+        <div>
+          <p class="eyebrow">Intelijen Keuangan</p>
+          <h1>Laporan Institusional</h1>
+          <p class="subtitle">Atur periode laporan, lalu unduh hasilnya dalam format PDF.</p>
+        </div>
+
+        <div class="head-actions">
+          <button class="btn-primary" type="button">Unduh PDF</button>
+        </div>
+      </header>
+
+      <section class="report-grid">
+        <article class="panel report-controls">
+          <h3>Konfigurasi Laporan</h3>
+
+          <label>Frekuensi Laporan</label>
+          <div class="frequency-list">
+            <button type="button" class="freq-btn">Laporan Harian</button>
+            <button type="button" class="freq-btn">Laporan Mingguan</button>
+            <button type="button" class="freq-btn active">Laporan Bulanan</button>
+          </div>
+
+          <label for="startDate">Tanggal Mulai</label>
+          <input id="startDate" type="date" value="2026-04-01" />
+
+          <label for="endDate">Tanggal Selesai</label>
+          <input id="endDate" type="date" value="2026-04-30" />
+        </article>
+
+        <article class="panel report-preview">
+          <div class="preview-head">
+            <p class="company">Rental Finance Control</p>
+            <h2>LAPORAN BULANAN</h2>
+            <p>1 OKTOBER - 31 OKTOBER 2026</p>
+          </div>
+
+          <div class="preview-kpis">
+            <div class="mini-card">
+              <p>Total Pendapatan Kotor</p>
+              <h3>Rp6.607.680.000</h3>
+              <span>+8,4% dibanding bulan lalu</span>
+            </div>
+            <div class="mini-card">
+              <p>Biaya Operasional</p>
+              <h3>Rp3.031.200.000</h3>
+              <span>-3,2% dibanding perkiraan</span>
+            </div>
+            <div class="mini-card accent">
+              <p>Laba Operasional Bersih</p>
+              <h3>Rp3.576.480.000</h3>
+              <span>Target tercapai</span>
+            </div>
+          </div>
+
+          <div class="chart-head">
+            <p>Tren Pendapatan (6 Bulan Terakhir)</p>
+            <div class="chart-legend">
+              <span><i class="legend-dot bars"></i>Pendapatan</span>
+              <span><i class="legend-dot line"></i>Tren</span>
+            </div>
+          </div>
+
+          <div class="bar-chart" aria-hidden="true">
+            <svg viewBox="0 0 720 220" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="areaGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#2aa06f" stop-opacity="0.28" />
+                  <stop offset="100%" stop-color="#2aa06f" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+
+              <g class="grid-lines">
+                <line x1="18" y1="185" x2="702" y2="185"></line>
+                <line x1="18" y1="145" x2="702" y2="145"></line>
+                <line x1="18" y1="105" x2="702" y2="105"></line>
+                <line x1="18" y1="65" x2="702" y2="65"></line>
+              </g>
+
+              <path class="trend-area" d="M82 128 L182 108 L282 116 L382 86 L482 96 L582 106 L582 185 L82 185 Z" fill="url(#areaGrad)"></path>
+              <polyline class="revenue-line" points="82,136 182,118 282,124 382,94 482,104 582,114"></polyline>
+              <polyline class="trend-line" points="82,128 182,108 282,116 382,86 482,96 582,106"></polyline>
+
+              <g class="x-axis-labels">
+                <text x="82" y="208">Mei</text>
+                <text x="182" y="208">Jun</text>
+                <text x="282" y="208">Jul</text>
+                <text x="382" y="208">Agu</text>
+                <text x="482" y="208">Sep</text>
+                <text x="582" y="208">Okt</text>
+              </g>
+            </svg>
+          </div>
+
+          <h4>Daftar Transaksi (Entri Utama)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Entitas / Deskripsi</th>
+                  <th>Kategori</th>
+                  <th>Nominal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>24 Okt 2026</td>
+                  <td>Global Securities Inc.</td>
+                  <td><span class="tag in">Pendapatan</span></td>
+                  <td class="amount pos">+Rp227.200.000</td>
+                </tr>
+                <tr>
+                  <td>24 Okt 2026</td>
+                  <td>Sewa Kantor Medicon Ave</td>
+                  <td><span class="tag out">Pengeluaran</span></td>
+                  <td class="amount neg">-Rp152.000.000</td>
+                </tr>
+                <tr>
+                  <td>22 Okt 2026</td>
+                  <td>Langganan Tahunan Sistem Cloud SAAS</td>
+                  <td><span class="tag out">Pengeluaran</span></td>
+                  <td class="amount neg">-Rp51.040.000</td>
+                </tr>
+                <tr>
+                  <td>21 Okt 2026</td>
+                  <td>Venture Capital Exit Bid</td>
+                  <td><span class="tag in">Pendapatan</span></td>
+                  <td class="amount pos">+Rp1.905.280.000</td>
+                </tr>
+                <tr>
+                  <td>20 Okt 2026</td>
+                  <td>Kontrak Korporat Mingguan</td>
+                  <td><span class="tag in">Pendapatan</span></td>
+                  <td class="amount pos">+Rp188.800.000</td>
+                </tr>
+                <tr>
+                  <td>19 Okt 2026</td>
+                  <td>Perawatan Armada Rutin</td>
+                  <td><span class="tag out">Pengeluaran</span></td>
+                  <td class="amount neg">-Rp64.000.000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+  <script src="sidebar.js"></script>
+</body>
+</html>

@@ -2,9 +2,45 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useAuth();
+  
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    // Validation
+    if (!email || !password) {
+      setError("Email dan password harus diisi");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const success = await login(email, password);
+
+      if (success) {
+        router.push("/dashboard");
+      } else {
+        setError("Email atau password salah");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Terjadi kesalahan saat login");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -75,17 +111,26 @@ export default function LoginPage() {
           </p>
 
           {/* Form */}
-          <form className="flex flex-col gap-4 text-gray-700">
+          <form className="flex flex-col gap-4 text-gray-700" onSubmit={handleSubmit}>
+
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
 
             {/* Email */}
             <div>
               <label className="text-sm font-medium text-gray-700">
-                Email atau Username
+                Email
               </label>
               <input
-                type="text"
-                placeholder="contoh: admin@financecontrol.com"
-                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                type="email"
+                placeholder="contoh: test@test.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -104,13 +149,17 @@ export default function LoginPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Masukkan kata sandi"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400"
+                  disabled={isLoading}
+                  className="absolute right-3 top-3 text-gray-400 disabled:opacity-50"
                 >
                   {showPassword ? "🙈" : "👁️"}
                 </button>
@@ -120,9 +169,10 @@ export default function LoginPage() {
             {/* Button */}
             <button
               type="submit"
-              className="mt-2 bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition"
+              disabled={isLoading}
+              className="mt-2 bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Masuk
+              {isLoading ? "Sedang masuk..." : "Masuk"}
             </button>
 
           </form>

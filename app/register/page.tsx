@@ -164,46 +164,28 @@ export default function RegisterPage() {
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">
-            Buat akun
-          </h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Lengkapi formulir untuk membuat akun Anda.
-          </p>
+          {!registeredUser && (
+            <>
+              <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                Buat akun
+              </h2>
+              <p className="text-sm text-gray-500 mb-6">
+                Lengkapi formulir untuk membuat akun Anda.
+              </p>
+            </>
+          )}
 
           {/* SUCCESS STATE */}
           {registeredUser && (
             <div className="flex flex-col items-center justify-center py-8">
-              {/* Checkmark Icon */}
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <div className="text-4xl">✓</div>
-              </div>
-
               {/* Success Title */}
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6">
                 Pendaftaran Berhasil!
               </h3>
 
-              {/* User Info Box */}
-              <div className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 space-y-3">
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">Username</p>
-                  <p className="text-sm font-semibold text-gray-800">
-                    {registeredUser.username}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">Email</p>
-                  <p className="text-sm font-semibold text-gray-800">
-                    {registeredUser.email}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">Role</p>
-                  <p className="text-sm font-semibold text-gray-800">
-                    {registeredUser.role}
-                  </p>
-                </div>
+              {/* Checkmark Icon */}
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                <div className="text-4xl">✓</div>
               </div>
 
               {/* Login Button */}

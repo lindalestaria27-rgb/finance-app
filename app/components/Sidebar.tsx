@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import useSidebarCollapse from "../dashboard/useSidebarCollapse";
+import { useAuth } from "@/app/context/AuthContext";
 import "./sidebar.css";
 
 export type SidebarActive = "dashboard" | "transactions" | "reports" | "predictions" | string;
@@ -11,7 +13,15 @@ interface Props {
 }
 
 export default function Sidebar({ active = "" }: Props) {
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  
   useSidebarCollapse();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   return (
     <aside className="sidebar">
@@ -33,17 +43,14 @@ export default function Sidebar({ active = "" }: Props) {
       </nav>
 
       <div className="sidebar-foot">
-        <p className="user-name">Akbar Palekori</p>
-        <p className="user-role">Pemilik</p>
+        <p className="user-name">{user?.username || "Guest"}</p>
+        <p className="user-role">{user?.role || "User"}</p>
       </div>
       <div className="sidebar-logout">
         <button
           type="button"
           className="btn-logout"
-          onClick={() => {
-            // simple client-side sign-out redirect to login page
-            window.location.href = "/login";
-          }}
+          onClick={handleLogout}
           aria-label="Keluar"
         >
           <span className="nav-icon">

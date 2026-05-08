@@ -1,0 +1,186 @@
+# Spesifikasi REST API untuk Semua Page
+
+---
+
+## 1. Login
+- **Endpoint:** POST /api/login
+- **Request:**
+```json
+{
+  "username": "user1",
+  "password": "rahasia"
+}
+```
+- **Response (success):**
+```json
+{
+  "status": "success",
+  "token": "jwt-token",
+  "user": {
+    "id": 1,
+    "name": "User 1",
+    "role": "admin"
+  }
+}
+```
+- **Response (error):**
+```json
+{
+  "status": "error",
+  "message": "Username atau password salah"
+}
+```
+
+---
+
+## 2. Register
+- **Endpoint:** POST /api/register
+- **Request:**
+```json
+{
+  "fullName": "Nama Lengkap",
+  "username": "user1",
+  "email": "user@email.com",
+  "password": "rahasia"
+}
+```
+- **Response (success):**
+```json
+{
+  "status": "success",
+  "message": "Registrasi berhasil, silakan login"
+}
+```
+- **Response (error):**
+```json
+{
+  "status": "error",
+  "message": "Username/email sudah terdaftar"
+}
+```
+
+---
+
+## 3. Forgot Password
+- **Endpoint:** POST /api/forgot-password
+- **Request:**
+```json
+{
+  "email": "user@email.com"
+}
+```
+- **Response (success):**
+```json
+{
+  "status": "success",
+  "message": "Link reset password telah dikirim ke email"
+}
+```
+- **Response (error):**
+```json
+{
+  "status": "error",
+  "message": "Email tidak ditemukan"
+}
+```
+
+---
+
+## 4. Dashboard (Summary Data)
+- **Endpoint:** GET /api/dashboard
+- **Headers:** Authorization: Bearer <token>
+- **Response:**
+```json
+{
+  "status": "success",
+  "summary": {
+    "total_transactions": 120,
+    "total_income": 50000000,
+    "total_expense": 20000000,
+    "active_rentals": 15
+  }
+}
+```
+
+---
+
+## 5. Prediction
+- **Endpoint:** POST /api/predict
+- **Headers:** Authorization: Bearer <token>
+- **Request:**
+```json
+{
+  "month": "2026-05"
+}
+```
+- **Response:**
+```json
+{
+  "status": "success",
+  "prediction": {
+    "income": 12000000,
+    "expense": 4000000
+  }
+}
+```
+
+---
+
+## 6. Transactions (List & Import)
+- **Endpoint:** GET /api/transactions
+- **Headers:** Authorization: Bearer <token>
+- **Query:** ?page=1&limit=20
+- **Response:**
+```json
+{
+  "status": "success",
+  "transactions": [
+    {
+      "id": 1,
+      "date": "2026-04-01",
+      "type": "income",
+      "amount": 1000000,
+      "description": "Pembayaran sewa"
+    }
+    // ...
+  ],
+  "total": 120
+}
+```
+- **Endpoint Import:** POST /api/transactions/import
+- **Request:** (file upload, format sesuai backend)
+- **Response:**
+```json
+{
+  "status": "success",
+  "message": "Data transaksi berhasil diimport"
+}
+```
+
+---
+
+## 7. Reports
+- **Endpoint:** GET /api/reports
+- **Headers:** Authorization: Bearer <token>
+- **Query:** ?period=2026-04
+- **Response:**
+```json
+{
+  "status": "success",
+  "report": {
+    "period": "2026-04",
+    "income": 10000000,
+    "expense": 4000000,
+    "details": [
+      // detail laporan
+    ]
+  }
+}
+```
+
+---
+
+**Catatan:**
+- Semua endpoint yang butuh login harus mengirimkan token di header.
+- Format bisa disesuaikan dengan kebutuhan frontend/backend.
+- Untuk upload file (import transaksi), biasanya pakai multipart/form-data.
