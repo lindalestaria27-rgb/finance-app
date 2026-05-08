@@ -47,7 +47,7 @@ export default function TransactionsPage() {
 
    const [formDate, setFormDate] = useState<Date | null>(null);
 	 const [formCategory, setFormCategory] = useState<"income" | "expense" | "">("");
-	 const [formAmount, setFormAmount] = useState<number | string>("");
+   const [formAmount, setFormAmount] = useState<string>("");
 	 const [formNote, setFormNote] = useState("");
 	 const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
 
@@ -123,7 +123,7 @@ export default function TransactionsPage() {
 		 setEditingTransactionId(t.id ?? null);
      setFormDate(formatDateForDisplay(t.date));
 		 setFormCategory(t.category);
-		 setFormAmount(t.amount);
+     setFormAmount(String(t.amount));
 		 setFormNote(t.note);
 	 }
 
@@ -189,6 +189,15 @@ export default function TransactionsPage() {
     return value.toLocaleString("id-ID");
   }
 
+  function formatAmountInput(value: string): string {
+    if (!value) return "";
+    return Number(value).toLocaleString("id-ID");
+  }
+
+  function normalizeAmountInput(value: string): string {
+    return value.replace(/\D/g, "");
+  }
+
   function parseDateValue(dateStr: string): Date | null {
     if (!dateStr) return null;
 
@@ -223,6 +232,11 @@ export default function TransactionsPage() {
     // EDIT: convert to DD-MM-YYYY for backend
     return date ? format(date, "dd-MM-yyyy") : "";
   }
+
+  function handleAmountChange(value: string) {
+    setFormAmount(normalizeAmountInput(value));
+  }
+
    async function handleSubmit(e: React.FormEvent) {
 		 e.preventDefault();
      setFormError("");
@@ -246,8 +260,14 @@ export default function TransactionsPage() {
      }
 
      // Validate amount
-     const amountNumber = Math.round(Number(formAmount || 0));
-     if (!formAmount || amountNumber <= 0) {
+     const amountText = String(formAmount ?? "").trim();
+     if (!/^[0-9]+$/.test(amountText)) {
+       setFormError("Nominal harus berupa angka bulat tanpa karakter lain");
+       return;
+     }
+
+     const amountNumber = Number(amountText);
+     if (amountNumber <= 0) {
        setFormError("Nominal harus lebih dari 0");
        return;
      }
@@ -475,7 +495,17 @@ export default function TransactionsPage() {
                 </div>
 
                 <label htmlFor="trxAmount">Nominal (Rupiah)</label>
-                <input id="trxAmount" name="trxAmount" type="number" min="1" step="1" placeholder="0" required value={formAmount} onChange={(e) => setFormAmount(e.target.value)} />
+                <input
+                  id="trxAmount"
+                  name="trxAmount"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9.]*"
+                  placeholder="0"
+                  required
+                  value={formatAmountInput(formAmount)}
+                  onChange={(e) => handleAmountChange(e.target.value)}
+                />
 
                 <label htmlFor="trxNote">Catatan</label>
                 <textarea id="trxNote" name="trxNote" rows={4} placeholder="Contoh: Pembayaran sewa kantor" value={formNote} onChange={(e) => setFormNote(e.target.value)} />
