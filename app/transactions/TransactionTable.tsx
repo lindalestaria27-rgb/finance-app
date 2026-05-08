@@ -16,6 +16,7 @@ interface Props {
   pageNumber?: number;
   pageSize?: number;
   highlightedId?: string | null;
+  isLoading?: boolean;
 }
 
 function formatDisplayDate(isoDate: string) {
@@ -31,7 +32,25 @@ function formatIdr(value: number) {
   return value.toLocaleString('id-ID');
 }
 
-export default function TransactionTable({ transactions, onEdit, onDelete, editingIndex, pageNumber = 1, pageSize = 10, highlightedId = null }: Props) {
+export default function TransactionTable({ transactions, onEdit, onDelete, editingIndex, pageNumber = 1, pageSize = 10, highlightedId = null, isLoading = false }: Props) {
+  if (isLoading) {
+    // Show skeleton loading rows
+    return (
+      <tbody>
+        {Array.from({ length: pageSize }).map((_, idx) => (
+          <tr key={`skeleton-${idx}`} className="skeleton-row">
+            <td className="col-number"><span className="skeleton skeleton-text"></span></td>
+            <td><span className="skeleton skeleton-text"></span></td>
+            <td><span className="skeleton skeleton-badge"></span></td>
+            <td><span className="skeleton skeleton-text"></span></td>
+            <td className="amount"><span className="skeleton skeleton-text"></span></td>
+            <td className="actions"><span className="skeleton skeleton-button"></span></td>
+          </tr>
+        ))}
+      </tbody>
+    );
+  }
+
   return (
     <tbody>
       {transactions.map((trx, idx) => {

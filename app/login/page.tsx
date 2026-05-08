@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
+// Using global login styles copied from slicing/login.css
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,6 +26,11 @@ export default function LoginPage() {
       return;
     }
 
+    if (!email.includes("@")) {
+      setError("Email tidak valid");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const success = await login(email, password);
@@ -43,75 +49,62 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      
-      {/* LEFT SIDE */}
-      <div className="hidden md:flex w-1/2 relative bg-[#0B1F3A] text-white p-16">
+    <main className="login-shell">
+
+      {/* LEFT SIDE (brand) */}
+      <section className="brand-panel">
 
         {/* Background */}
-        <div className="absolute inset-0 opacity-10 bg-pattern bg-cover" />
+        <div className="finance-motion" aria-hidden="true">
+          <div className="finance-line-layer" />
+          <div className="finance-grid-layer" />
+        </div>
 
         {/* CENTER CONTENT */}
-        <div className="relative z-10 max-w-lg m-auto">
-          
-          {/* Title */}
-          <h1 className="text-4xl font-semibold leading-tight">
+        <div className="brand-copy">
+          <h1>
             Intelijen di balik <br />
-            <span className="text-[#22C55E] font-bold">
-              pertumbuhan institusional.
-            </span>
+            <span>pertumbuhan institusional.</span>
           </h1>
 
-          {/* Description */}
-          <p className="mt-6 text-gray-300 text-sm leading-relaxed">
+          <p>
             Akses dashboard keuangan rental mobil dengan ringkasan transaksi,
             laporan periodik, dan insight prediktif dalam satu portal.
           </p>
-
         </div>
 
-  {/* BOTTOM RIGHT */}
-  <div className="absolute bottom-10 right-10 z-10 flex items-center gap-2 text-gray-400 text-sm">
-    <div className="flex -space-x-2">
-      <div className="w-6 h-6 bg-gray-400 rounded-full" />
-      <div className="w-6 h-6 bg-gray-500 rounded-full" />
-      <div className="w-6 h-6 bg-gray-600 rounded-full" />
-    </div>
-    <span>Dipercaya oleh 12.000+ operator institusional.</span>
-  </div>
+        <div className="brand-foot">
+          <div className="avatar-stack" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p>Dipercaya oleh 12.000+ operator institusional.</p>
+        </div>
 
-</div>
+      </section>
 
-      {/* RIGHT SIDE */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-[#F8FAFC] px-6">
-        
-        <div className="w-full max-w-md">
+      {/* RIGHT SIDE (auth) */}
+      <section className="auth-panel">
+        <div className="auth-inner">
 
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-[#22C55E] rounded-lg flex items-center justify-center text-white font-bold">
-              F
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-800 tracking-wide">
-                RENTAL FINANCE CONTROL
-              </p>
-              <p className="text-xs text-gray-500">
-                Sistem Manajemen Rental Mobil
-              </p>
+          {/* Logo / Brand top */}
+          <div className="brand-top auth-brand-top">
+            <div className="brand-mark">F</div>
+            <div className="brand-name-wrap auth-brand-name-wrap">
+              <p className="brand-name auth-brand-name">RENTAL FINANCE CONTROL</p>
+              <p className="brand-sub auth-brand-sub">Sistem Manajemen Rental Mobil</p>
             </div>
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">
-            Selamat datang kembali
-          </h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Silakan masukkan kredensial untuk mengakses akun Anda.
-          </p>
+          <div className="auth-header">
+            <h2>Selamat datang kembali</h2>
+            <p>Silakan masukkan kredensial untuk mengakses akun Anda.</p>
+          </div>
 
           {/* Form */}
-          <form className="flex flex-col gap-4 text-gray-700" onSubmit={handleSubmit}>
+          <form className="auth-form" onSubmit={handleSubmit}>
 
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
@@ -121,59 +114,35 @@ export default function LoginPage() {
 
             {/* Email */}
             <div>
-              <label className="text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="contoh: test@test.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
-              />
+              <label htmlFor="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="contoh: admin@financecontrol.com" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={isLoading} />
             </div>
 
             {/* Password */}
             <div>
-              <div className="flex justify-between text-sm mb-1">
-                <label className="font-medium text-gray-700">
-                  Kata Sandi
-                </label>
-                <Link href="/lupa-password" className="text-gray-400 cursor-pointer hover:text-gray-600">
-                  Lupa Kata Sandi?
-                </Link>
+              <div className="password-row">
+                <label htmlFor="password">Kata Sandi</label>
+                <Link href="/lupa-password" className="link-muted">Lupa kata sandi?</Link>
               </div>
-
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Masukkan kata sandi"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                  className="absolute right-3 top-3 text-gray-400 disabled:opacity-50"
-                >
-                  {showPassword ? "🙈" : "👁️"}
+              <div className="password-field">
+                <input id="password" name="password" type={showPassword ? 'text' : 'password'} placeholder="Masukkan kata sandi" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className={`password-toggle ${showPassword ? 'is-open' : ''}`} aria-pressed={showPassword} aria-label="Tampilkan kata sandi">
+                  <svg className="icon-eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M3 3l18 18"></path>
+                    <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"></path>
+                    <path d="M16.68 16.67A10.94 10.94 0 0 1 12 18C7 18 3 12 3 12a18.46 18.46 0 0 1 3.17-3.92"></path>
+                    <path d="M9.88 5.09A10.94 10.94 0 0 1 12 5c5 0 9 7 9 7a18.47 18.47 0 0 1-1.67 2.68"></path>
+                  </svg>
+                  <svg className="icon-eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
                 </button>
               </div>
             </div>
 
             {/* Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="mt-2 bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? "Sedang masuk..." : "Masuk"}
-            </button>
+            <button type="submit" className="btn-login">{isLoading ? 'Sedang masuk...' : 'Masuk'}</button>
 
           </form>
 
@@ -186,7 +155,7 @@ export default function LoginPage() {
           </p>
 
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

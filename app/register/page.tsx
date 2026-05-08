@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -106,113 +106,94 @@ export default function RegisterPage() {
     router.push("/login");
   };
 
+  useEffect(() => {
+    document.body.classList.add("register-page");
+    return () => {
+      document.body.classList.remove("register-page");
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen flex">
+    <main className="login-shell">
 
-      {/* LEFT SIDE */}
-      <div className="hidden md:flex w-1/2 relative bg-[#0B1F3A] text-white p-16">
+      <section className="brand-panel">
+        <div className="finance-motion" aria-hidden="true">
+          <div className="finance-line-layer"></div>
+          <div className="finance-grid-layer"></div>
+        </div>
 
-        {/* Background */}
-        <div className="absolute inset-0 opacity-10 bg-pattern bg-cover" />
-
-        {/* CENTER CONTENT */}
-        <div className="relative z-10 max-w-lg m-auto">
-          <h1 className="text-4xl font-semibold leading-tight">
-            Bangun akses yang aman <br />
-            <span className="text-[#22C55E] font-bold">
-              sejak hari pertama.
-            </span>
-          </h1>
-
-          <p className="mt-6 text-gray-300 text-sm leading-relaxed">
-            Daftarkan akun baru untuk mulai mengelola transaksi,
-            laporan periodik, dan insight prediksi pendapatan
-            dalam satu sistem.
+        <div className="brand-copy">
+          <h1>Bangun akses yang aman <span>sejak hari pertama.</span></h1>
+          <p>
+            Daftarkan akun baru untuk mulai mengelola transaksi, laporan periodik,
+            dan insight prediksi pendapatan dalam satu sistem.
           </p>
         </div>
 
-  {/* BOTTOM RIGHT */}
-  <div className="absolute bottom-10 right-10 z-10 flex items-center gap-2 text-gray-400 text-sm">
-    <div className="flex -space-x-2">
-      <div className="w-6 h-6 bg-gray-400 rounded-full" />
-      <div className="w-6 h-6 bg-gray-500 rounded-full" />
-      <div className="w-6 h-6 bg-gray-600 rounded-full" />
-    </div>
-    <span>Dipercaya oleh 12.000+ operator institusional.</span>
-  </div>
+        <div className="brand-foot">
+          <div className="avatar-stack" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <p>Dipercaya oleh 12.000+ operator institusional.</p>
+        </div>
+      </section>
 
-</div>
+      <section className="auth-panel">
+        <div className="auth-inner">
 
-      {/* RIGHT SIDE */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-[#F8FAFC] px-6">
-
-        <div className="w-full max-w-md">
-
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-[#22C55E] rounded-lg flex items-center justify-center text-white font-bold">
-              F
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-800 tracking-wide">
-                RENTAL FINANCE CONTROL
-              </p>
-              <p className="text-xs text-gray-500">
-                Sistem Manajemen Rental Mobil
-              </p>
+          <div className="brand-top auth-brand-top">
+            <div className="brand-mark">F</div>
+            <div className="brand-name-wrap auth-brand-name-wrap">
+              <p className="brand-name auth-brand-name">RENTAL FINANCE CONTROL</p>
+              <p className="brand-sub auth-brand-sub">Sistem Manajemen Rental Mobil</p>
             </div>
           </div>
 
-          {/* Title */}
           {!registeredUser && (
-            <>
-              <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                Buat akun
-              </h2>
-              <p className="text-sm text-gray-500 mb-6">
-                Lengkapi formulir untuk membuat akun Anda.
-              </p>
-            </>
+            <div className="auth-header">
+              <h2>Buat akun</h2>
+              <p>Lengkapi formulir untuk membuat akun Anda.</p>
+            </div>
           )}
 
           {/* SUCCESS STATE */}
           {registeredUser && (
-            <div className="flex flex-col items-center justify-center py-8">
-              {/* Success Title */}
-              <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                Pendaftaran Berhasil!
-              </h3>
-
-              {/* Checkmark Icon */}
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <div className="text-4xl">✓</div>
+            <div>
+              <div className="auth-header">
+                <h2>Pendaftaran Berhasil!</h2>
+                <p className="request-access">Akun Anda berhasil dibuat. Silakan lanjut ke halaman login untuk masuk.</p>
               </div>
 
-              {/* Login Button */}
-              <button
-                onClick={handleGoToLogin}
-                className="w-full bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition"
-              >
-                Lanjut ke Login
-              </button>
+              <div style={{ marginTop: 18, marginBottom: 18, display: 'flex', justifyContent: 'center' }} aria-hidden>
+                <div style={{ width: 72, height: 72, borderRadius: 999, display: 'grid', placeItems: 'center', background: 'linear-gradient(140deg,#dff4e9,#bde9ce)', color: '#06472a' }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#06472a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+              </div>
 
-              {/* Back to Register Link */}
-              <button
-                onClick={() => {
-                  setRegisteredUser(null);
-                  setError("");
-                  setSuccess("");
-                }}
-                className="mt-4 text-sm text-gray-500 hover:text-gray-700 transition"
-              >
-                ← Buat akun baru
-              </button>
+              <div>
+                <button onClick={handleGoToLogin} className="btn-login" style={{ width: '100%' }}>
+                  Lanjut ke Login
+                </button>
+              </div>
+
+              <div style={{ marginTop: 12 }}>
+                <button
+                  onClick={() => {
+                    setRegisteredUser(null);
+                    setError("");
+                    setSuccess("");
+                  }}
+                  className="link-muted"
+                >
+                  ← Buat akun baru
+                </button>
+              </div>
             </div>
           )}
 
           {/* FORM (Hidden when success) */}
           {!registeredUser && (
-            <form className="flex flex-col text-gray-700 gap-4" onSubmit={handleSubmit}>
+            <form className="auth-form" onSubmit={handleSubmit}>
 
               {error && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
@@ -226,96 +207,63 @@ export default function RegisterPage() {
                 </div>
               )}
 
-            {/* Username */}
             <div>
-              <label className="text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <input
-                type="text"
-                placeholder="contoh: akbar.admin"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
-                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
-              />
+              <label htmlFor="fullName">Nama Lengkap</label>
+              <input id="fullName" name="fullName" type="text" placeholder="contoh: Akbar Palekori" required />
             </div>
 
-            {/* Email */}
             <div>
-              <label className="text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="contoh: admin@financecontrol.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-                className="w-full mt-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
-              />
+              <label htmlFor="username">Username</label>
+              <input id="username" name="username" type="text" placeholder="contoh: akbar.admin" required value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
 
-            {/* Password */}
             <div>
-              <label className="text-sm font-medium text-gray-700">
-                Kata Sandi
-              </label>
+              <label htmlFor="registerEmail">Email</label>
+              <input id="registerEmail" name="registerEmail" type="email" placeholder="contoh: admin@financecontrol.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
 
-              <div className="relative mt-1">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Minimal 6 karakter"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                  className="absolute right-3 top-3 text-gray-400 disabled:opacity-50"
-                >
-                  {showPassword ? "🙈" : "👁️"}
+            <div>
+              <div className="password-row">
+                <label htmlFor="password">Kata Sandi</label>
+              </div>
+              <div className="password-field">
+                <input id="password" name="password" type={showPassword ? 'text' : 'password'} placeholder="Minimal 8 karakter" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button type="button" className={`password-toggle ${showPassword ? 'is-open' : ''}`} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)} aria-label="Tampilkan kata sandi">
+                  <svg className="icon-eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M3 3l18 18"></path>
+                    <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"></path>
+                    <path d="M16.68 16.67A10.94 10.94 0 0 1 12 18C7 18 3 12 3 12a18.46 18.46 0 0 1 3.17-3.92"></path>
+                    <path d="M9.88 5.09A10.94 10.94 0 0 1 12 5c5 0 9 7 9 7a18.47 18.47 0 0 1-1.67 2.68"></path>
+                  </svg>
+                  <svg className="icon-eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
                 </button>
               </div>
             </div>
 
-            {/* Confirm Password */}
             <div>
-              <label className="text-sm font-medium text-gray-700">
-                Konfirmasi Kata Sandi
-              </label>
-
-              <div className="relative mt-1">
-                <input
-                  type={showConfirm ? "text" : "password"}
-                  placeholder="Masukkan ulang kata sandi"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  disabled={isLoading}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1F3A] disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  disabled={isLoading}
-                  className="absolute right-3 top-3 text-gray-400 disabled:opacity-50"
-                >
-                  {showConfirm ? "🙈" : "👁️"}
+              <label htmlFor="confirmPassword">Konfirmasi Kata Sandi</label>
+              <div className="password-field">
+                <input id="confirmPassword" name="confirmPassword" type={showConfirm ? 'text' : 'password'} placeholder="Masukkan ulang kata sandi" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                <button type="button" className={`password-toggle ${showConfirm ? 'is-open' : ''}`} aria-pressed={showConfirm} onClick={() => setShowConfirm(!showConfirm)} aria-label="Tampilkan kata sandi">
+                  <svg className="icon-eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M3 3l18 18"></path>
+                    <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"></path>
+                    <path d="M16.68 16.67A10.94 10.94 0 0 1 12 18C7 18 3 12 3 12a18.46 18.46 0 0 1 3.17-3.92"></path>
+                    <path d="M9.88 5.09A10.94 10.94 0 0 1 12 5c5 0 9 7 9 7a18.47 18.47 0 0 1-1.67 2.68"></path>
+                  </svg>
+                  <svg className="icon-eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
                 </button>
               </div>
             </div>
 
             {/* Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="mt-2 bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <button type="submit" disabled={isLoading} className="btn-login">
               {isLoading ? "Mendaftar..." : "Buat Akun"}
             </button>
             </form>
@@ -332,7 +280,7 @@ export default function RegisterPage() {
           )}
 
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

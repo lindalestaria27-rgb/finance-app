@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import { format, isValid, parseISO } from "date-fns";
 import { useAuth } from "@/app/context/AuthContext";
 import TransactionTable, { Transaction } from "./TransactionTable";
 import Sidebar from "../components/Sidebar";
@@ -43,9 +45,7 @@ export default function TransactionsPage() {
      return () => clearTimeout(timer);
    }, [highlightedTransactionId]);
 
-	 const dateRef = useRef<HTMLInputElement | null>(null);
-
-	 const [formDate, setFormDate] = useState("");
+   const [formDate, setFormDate] = useState<Date | null>(null);
 	 const [formCategory, setFormCategory] = useState<"income" | "expense" | "">("");
 	 const [formAmount, setFormAmount] = useState<number | string>("");
 	 const [formNote, setFormNote] = useState("");
@@ -102,7 +102,7 @@ export default function TransactionsPage() {
    }, [isAuthLoading, token, currentPage, pageSize]);
 
 	 function clearForm() {
-		 setFormDate("");
+     setFormDate(null);
 		 setFormCategory("");
 		 setFormAmount("");
 		 setFormNote("");
@@ -114,7 +114,6 @@ export default function TransactionsPage() {
 	 function openAdd() {
 		 clearForm();
 		 setIsAdding(true);
-		 setTimeout(() => dateRef.current?.focus(), 50);
 	 }
 
 	 function handleEdit(index: number) {
@@ -122,11 +121,10 @@ export default function TransactionsPage() {
 		 setEditingIndex(index);
 		 setIsAdding(true);
 		 setEditingTransactionId(t.id ?? null);
-		 setFormDate(t.date);
+     setFormDate(formatDateForDisplay(t.date));
 		 setFormCategory(t.category);
 		 setFormAmount(t.amount);
 		 setFormNote(t.note);
-		 setTimeout(() => dateRef.current?.focus(), 50);
 	 }
 
 	 function handleDelete(index: number) {
@@ -190,10 +188,76 @@ export default function TransactionsPage() {
   function formatIdr(value: number) {
     return value.toLocaleString("id-ID");
   }
+
+  function parseDateValue(dateStr: string): Date | null {
+    if (!dateStr) return null;
+
+    const normalized = dateStr.trim().replace(/[.\/\s]+/g, "-");
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+      const parsed = parseISO(normalized);
+      return isValid(parsed) ? parsed : null;
+    }
+
+    if (/^\d{2}-\d{2}-\d{4}$/.test(normalized)) {
+      const [day, month, year] = normalized.split("-").map(Number);
+      const parsed = new Date(year, month - 1, day);
+      return isValid(parsed) ? parsed : null;
+    }
+
+    const parsed = new Date(dateStr);
+    return isValid(parsed) ? parsed : null;
+  }
+
+  function formatDateForDisplay(dateStr: string): Date | null {
+    return parseDateValue(dateStr);
+  }
+
+
+  function formatDateForCreateApi(date: Date | null): string {
+    // CREATE: convert to YYYY-MM-DD for backend
+    return date ? format(date, "yyyy-MM-dd") : "";
+  }
+
+  function formatDateForEditApi(date: Date | null): string {
+    // EDIT: convert to DD-MM-YYYY for backend
+    return date ? format(date, "dd-MM-yyyy") : "";
+  }
    async function handleSubmit(e: React.FormEvent) {
 		 e.preventDefault();
-		 const amountNumber = Math.max(0, Math.round(Number(formAmount || 0)));
      setFormError("");
+
+     // Validate date
+     // Use different date format for CREATE vs EDIT
+     const apiDate = editingIndex != null 
+       ? formatDateForEditApi(formDate)
+       : formatDateForCreateApi(formDate);
+     
+     if (!apiDate) {
+       const formatHint = editingIndex != null ? "DD-MM-YYYY" : "YYYY-MM-DD";
+       setFormError(`Tanggal tidak boleh kosong. Format: ${formatHint}`);
+       return;
+     }
+
+     // Validate category
+     if (!formCategory) {
+       setFormError("Kategori harus dipilih (Pendapatan atau Pengeluaran)");
+       return;
+     }
+
+     // Validate amount
+     const amountNumber = Math.round(Number(formAmount || 0));
+     if (!formAmount || amountNumber <= 0) {
+       setFormError("Nominal harus lebih dari 0");
+       return;
+     }
+
+     // Validate note
+     const noteStr = (formNote || "").trim();
+     if (!noteStr) {
+       setFormError("Catatan tidak boleh kosong");
+       return;
+     }
 
 		 if (editingIndex != null) {
        const authHeader = getAuthHeaderValue(token);
@@ -218,8 +282,8 @@ export default function TransactionsPage() {
            body: JSON.stringify({
              amount: amountNumber,
              category: formCategory === "income" ? "in" : "out",
-             transaction_date: formDate,
-             note: formNote
+             transaction_date: apiDate,
+             note: noteStr
            })
          });
 
@@ -267,8 +331,8 @@ export default function TransactionsPage() {
            body: JSON.stringify({
              amount: amountNumber,
              category: formCategory === "income" ? "in" : "out",
-             transaction_date: formDate,
-             note: formNote
+             transaction_date: apiDate,
+             note: noteStr
            })
          });
 
@@ -379,7 +443,17 @@ export default function TransactionsPage() {
               <h3 id="entryTitle">{editingIndex != null ? "Ubah Transaksi" : "Tambah Transaksi"}</h3>
               <form className="entry-form" onSubmit={handleSubmit}>
                 <label htmlFor="trxDate">Tanggal Transaksi</label>
-                <input ref={dateRef} id="trxDate" name="trxDate" type="date" required value={formDate} onChange={(e) => setFormDate(e.target.value)} />
+                <DatePicker
+                  id="trxDate"
+                  selected={formDate}
+                  onChange={(date: Date | null) => setFormDate(date)}
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="dd-mm-yyyy"
+                  className="date-picker-input"
+                  wrapperClassName="date-picker-wrapper"
+                  autoComplete="off"
+                  required
+                />
 
                 <label htmlFor="trxCategory">Kategori</label>
                 <div className="relative">
@@ -437,7 +511,7 @@ export default function TransactionsPage() {
                     <th>Aksi</th>
                   </tr>
                 </thead>
-                <TransactionTable transactions={transactions} onEdit={handleEdit} onDelete={handleDelete} editingIndex={editingIndex} pageNumber={currentPage} pageSize={pageSize} highlightedId={highlightedTransactionId} />
+                <TransactionTable transactions={transactions} onEdit={handleEdit} onDelete={handleDelete} editingIndex={editingIndex} pageNumber={currentPage} pageSize={pageSize} highlightedId={highlightedTransactionId} isLoading={isLoadingTransactions} />
               </table>
             </div>
             <div className="pagination-bar" aria-live="polite">

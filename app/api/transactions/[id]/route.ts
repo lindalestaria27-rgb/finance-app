@@ -40,6 +40,25 @@ function convertDateToBackendFormat(isoDate: string): string {
   return isoDate;
 }
 
+function parseToIso(dateStr: string): string | null {
+  if (!dateStr) return null;
+  dateStr = dateStr.trim();
+  const normalized = dateStr.replace(/[\.\/\s]+/g, '-');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) return normalized;
+  if (/^\d{2}-\d{2}-\d{4}$/.test(normalized)) {
+    const [d, m, y] = normalized.split('-');
+    return `${y}-${m}-${d}`;
+  }
+  const parsed = new Date(dateStr);
+  if (!isNaN(parsed.getTime())) {
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return null;
+}
+
 function resolveAuthorizationHeader(request: Request): string | null {
   const incomingHeader = request.headers.get('authorization')?.trim();
   if (!incomingHeader) {
@@ -49,6 +68,54 @@ function resolveAuthorizationHeader(request: Request): string | null {
   return incomingHeader.toLowerCase().startsWith('bearer ')
     ? incomingHeader
     : `Bearer ${incomingHeader}`;
+}
+
+function validateAndFormatUpdateTransaction(payload: UpdateTransactionPayload): {
+  valid: boolean;
+  error?: string;
+  data?: {
+    amount: number;
+    category: 'in' | 'out';
+    note: string;
+    transaction_date: string;
+  };
+} {
+  const isoDate = parseToIso(payload.transaction_date);
+
+  if (!isoDate || !validateDateFormat(isoDate)) {
+    return {
+      valid: false,
+      error: 'Format transaction_date tidak valid, harus DD-MM-YYYY (contoh: 02-02-2000)'
+    };
+  }
+
+  if (payload.amount <= 0) {
+    return {
+      valid: false,
+      error: 'Nominal harus lebih dari 0'
+    };
+  }
+
+  const noteStr = (payload.note || '').trim();
+  if (!noteStr) {
+    return {
+      valid: false,
+      error: 'Catatan tidak boleh kosong'
+    };
+  }
+
+  // Convert to backend format DD-MM-YYYY
+  const backendDate = convertDateToBackendFormat(isoDate);
+
+  return {
+    valid: true,
+    data: {
+      amount: payload.amount,
+      category: payload.category,
+      note: noteStr,
+      transaction_date: backendDate
+    }
+  };
 }
 
 export async function PATCH(
@@ -69,11 +136,13 @@ export async function PATCH(
       note: body.note ?? ''
     };
 
-    if (!payload.transaction_date || !validateDateFormat(payload.transaction_date) || !payload.note || payload.amount <= 0) {
+    // Validate and format transaction for UPDATE
+    const validation = validateAndFormatUpdateTransaction(payload);
+    if (!validation.valid) {
       return NextResponse.json(
         {
           success: false,
-          server_message: 'Data transaksi tidak valid'
+          server_message: validation.error
         } satisfies BackendUpdateTransactionResponse,
         { status: 400 }
       );
@@ -96,10 +165,7 @@ export async function PATCH(
         Authorization: authHeader,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        ...payload,
-        transaction_date: convertDateToBackendFormat(payload.transaction_date)
-      }),
+      body: JSON.stringify(validation.data),
       cache: 'no-store'
     });
 

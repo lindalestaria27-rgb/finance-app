@@ -321,6 +321,12 @@ html.sidebar-collapsed-preload .page-shell .sidebar-toggle {
   padding: 10px 12px;
 }
 
+.date-picker-wrapper,
+.date-picker-wrapper .react-datepicker__input-container,
+.date-picker-wrapper .react-datepicker__input-container input {
+  width: 100%;
+}
+
 .entry-form textarea {
   resize: vertical;
   min-height: 92px;
@@ -643,6 +649,57 @@ body.modal-open {
 
 #transactionTable tbody tr.is-new {
   animation: highlight-new 2s ease-in-out forwards;
+}
+
+/* Skeleton Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+#transactionTable tbody tr.skeleton-row {
+  opacity: 0.8;
+}
+
+#transactionTable tbody tr.skeleton-row td {
+  padding: 10px 12px;
+}
+
+.skeleton {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e0e0e0 50%,
+    #f0f0f0 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-text {
+  display: inline-block;
+  height: 14px;
+  width: 80%;
+}
+
+.skeleton-badge {
+  display: inline-block;
+  height: 20px;
+  width: 60px;
+  border-radius: 12px;
+}
+
+.skeleton-button {
+  display: inline-block;
+  height: 32px;
+  width: 45px;
+  border-radius: 6px;
 }
 
 @media (max-width: 1260px) {

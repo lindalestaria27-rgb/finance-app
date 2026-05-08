@@ -135,10 +135,20 @@ export default function ReportsPage() {
             <button onClick={() => setFrequency("bulanan")} className={`option ${frequency === "bulanan" ? "active" : ""}`}>Laporan Bulanan</button>
 
             <p>Tanggal Mulai</p>
-            <input type="date" onChange={(e) => setStartDate(e.target.value)} />
+            <input 
+              type="date" 
+              placeholder="dd/mm/yyyy"
+              onChange={(e) => setStartDate(e.target.value)} 
+              value={startDate}
+            />
 
             <p>Tanggal Selesai</p>
-            <input type="date" onChange={(e) => setEndDate(e.target.value)} />
+            <input 
+              type="date" 
+              placeholder="dd/mm/yyyy"
+              onChange={(e) => setEndDate(e.target.value)} 
+              value={endDate}
+            />
           </aside>
 
           {/* RIGHT */}

@@ -64,9 +64,17 @@ type TransactionsListResponse = {
 };
 
 function mapTransaction(transaction: BackendTransaction): UiTransaction {
+  // Normalize backend date (likely DD-MM-YYYY) into UI ISO format YYYY-MM-DD
+  let uiDate = transaction.transaction_date ?? '';
+  // If backend returns DD-MM-YYYY convert to YYYY-MM-DD
+  if (/^\d{2}-\d{2}-\d{4}$/.test(uiDate)) {
+    const [d, m, y] = uiDate.split('-');
+    uiDate = `${y}-${m}-${d}`;
+  }
+
   return {
     id: transaction.id,
-    date: transaction.transaction_date,
+    date: uiDate,
     category: transaction.category === 'in' ? 'income' : 'expense',
     note: transaction.note,
     amount: Math.abs(transaction.amount)
@@ -91,6 +99,29 @@ function convertDateToBackendFormat(isoDate: string): string {
   return isoDate;
 }
 
+function parseToIso(dateStr: string): string | null {
+  if (!dateStr) return null;
+  dateStr = dateStr.trim();
+  // normalize separators and remove spaces: accept / . or -
+  const normalized = dateStr.replace(/[\.\/\s]+/g, '-');
+  // already ISO
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) return normalized;
+  // DD-MM-YYYY or DD/MM/YYYY or DD.MM.YYYY -> convert
+  if (/^\d{2}-\d{2}-\d{4}$/.test(normalized)) {
+    const [d, m, y] = normalized.split('-');
+    return `${y}-${m}-${d}`;
+  }
+  // try to parse with Date (fallback) and format as YYYY-MM-DD
+  const parsed = new Date(dateStr);
+  if (!isNaN(parsed.getTime())) {
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return null;
+}
+
 function resolveAuthorizationHeader(request: Request): string | null {
   const incomingHeader = request.headers.get('authorization')?.trim();
   if (!incomingHeader) {
@@ -100,6 +131,53 @@ function resolveAuthorizationHeader(request: Request): string | null {
   return incomingHeader.toLowerCase().startsWith('bearer ')
     ? incomingHeader
     : `Bearer ${incomingHeader}`;
+}
+
+function validateAndFormatCreateTransaction(payload: CreateTransactionPayload): {
+  valid: boolean;
+  error?: string;
+  data?: {
+    amount: number;
+    category: 'in' | 'out';
+    note: string;
+    transaction_date: string;
+  };
+} {
+  const isoDate = parseToIso(payload.transaction_date);
+
+  if (!isoDate || !validateDateFormat(isoDate)) {
+    return {
+      valid: false,
+      error: 'Format transaction_date tidak valid, harus YYYY-MM-DD (contoh: 2026-05-08)'
+    };
+  }
+
+  if (payload.amount <= 0) {
+    return {
+      valid: false,
+      error: 'Nominal harus lebih dari 0'
+    };
+  }
+
+  const noteStr = (payload.note || '').trim();
+  if (!noteStr) {
+    return {
+      valid: false,
+      error: 'Catatan tidak boleh kosong'
+    };
+  }
+
+  // For CREATE: send as-is (YYYY-MM-DD)
+
+  return {
+    valid: true,
+    data: {
+      amount: payload.amount,
+      category: payload.category,
+      note: noteStr,
+      transaction_date: isoDate
+    }
+  };
 }
 
 export async function GET(request: Request) {
@@ -193,11 +271,13 @@ export async function POST(request: Request) {
       note: body.note ?? ''
     };
 
-    if (!payload.transaction_date || !validateDateFormat(payload.transaction_date) || !payload.note || payload.amount <= 0) {
+    // Validate and format transaction for CREATE
+    const validation = validateAndFormatCreateTransaction(payload);
+    if (!validation.valid) {
       return NextResponse.json(
         {
           success: false,
-          server_message: 'Data transaksi tidak valid'
+          server_message: validation.error
         } satisfies BackendCreateTransactionResponse,
         { status: 400 }
       );
@@ -220,10 +300,7 @@ export async function POST(request: Request) {
         Authorization: authHeader,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        ...payload,
-        transaction_date: convertDateToBackendFormat(payload.transaction_date)
-      }),
+      body: JSON.stringify(validation.data),
       cache: 'no-store'
     });
 
