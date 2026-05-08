@@ -18,6 +18,12 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role] = useState("staff");
   const [organizationId] = useState("ca5196b5-479b-4559-8f44-867d053d7fc5");
+  
+  const [registeredUser, setRegisteredUser] = useState<{
+    username: string;
+    email: string;
+    role: string;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,15 +83,27 @@ export default function RegisterPage() {
         return;
       }
 
-      setSuccess("Akun berhasil dibuat! Redirecting ke login...");
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      // Set registered user data to show success state
+      setRegisteredUser({
+        username: data.username || username,
+        email: data.email || email,
+        role: "Staff"
+      });
+      
+      // Clear form
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
     } catch {
       setError("Gagal mendaftar akun");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoToLogin = () => {
+    router.push("/login");
   };
 
   return (
@@ -153,20 +171,78 @@ export default function RegisterPage() {
             Lengkapi formulir untuk membuat akun Anda.
           </p>
 
-          {/* FORM */}
-          <form className="flex flex-col text-gray-700 gap-4" onSubmit={handleSubmit}>
-
-            {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                {error}
+          {/* SUCCESS STATE */}
+          {registeredUser && (
+            <div className="flex flex-col items-center justify-center py-8">
+              {/* Checkmark Icon */}
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                <div className="text-4xl">✓</div>
               </div>
-            )}
 
-            {success && (
-              <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
-                {success}
+              {/* Success Title */}
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                Pendaftaran Berhasil!
+              </h3>
+
+              {/* User Info Box */}
+              <div className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 space-y-3">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Username</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    {registeredUser.username}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Email</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    {registeredUser.email}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Role</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    {registeredUser.role}
+                  </p>
+                </div>
               </div>
-            )}
+
+              {/* Login Button */}
+              <button
+                onClick={handleGoToLogin}
+                className="w-full bg-[#0B1F3A] text-white py-3 rounded-lg font-medium hover:opacity-90 transition"
+              >
+                Lanjut ke Login
+              </button>
+
+              {/* Back to Register Link */}
+              <button
+                onClick={() => {
+                  setRegisteredUser(null);
+                  setError("");
+                  setSuccess("");
+                }}
+                className="mt-4 text-sm text-gray-500 hover:text-gray-700 transition"
+              >
+                ← Buat akun baru
+              </button>
+            </div>
+          )}
+
+          {/* FORM (Hidden when success) */}
+          {!registeredUser && (
+            <form className="flex flex-col text-gray-700 gap-4" onSubmit={handleSubmit}>
+
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                  {success}
+                </div>
+              )}
 
             {/* Username */}
             <div>
@@ -260,15 +336,18 @@ export default function RegisterPage() {
             >
               {isLoading ? "Mendaftar..." : "Buat Akun"}
             </button>
-          </form>
+            </form>
+          )}
 
-          {/* Login link */}
-          <p className="text-sm text-gray-500 mt-6 text-center">
-            Sudah punya akun?{" "}
-            <Link href="/login" className="text-[#0B1F3A] font-medium">
-              Masuk
-            </Link>
-          </p>
+          {/* Login link - Show only when not registered */}
+          {!registeredUser && (
+            <p className="text-sm text-gray-500 mt-6 text-center">
+              Sudah punya akun?{" "}
+              <Link href="/login" className="text-[#0B1F3A] font-medium">
+                Masuk
+              </Link>
+            </p>
+          )}
 
         </div>
       </div>
