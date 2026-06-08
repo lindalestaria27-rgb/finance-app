@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-
-const BACKEND_BASE_URL =
-  process.env.FINANCE_API_BASE_URL ?? 'https://finmanagement-car-rental.hf.space';
+import { BACKEND_BASE_URL } from '@/lib/backend';
 
 
 type UpdateTransactionPayload = {
@@ -82,12 +80,13 @@ function validateAndFormatUpdateTransaction(payload: UpdateTransactionPayload): 
     transaction_date: string;
   };
 } {
+  // payload.transaction_date should already be YYYY-MM-DD from client
   const isoDate = parseToIso(payload.transaction_date);
 
   if (!isoDate || !validateDateFormat(isoDate)) {
     return {
       valid: false,
-      error: 'Format transaction_date tidak valid, harus DD-MM-YYYY (contoh: 02-02-2000)'
+      error: 'Format transaction_date tidak valid, harus YYYY-MM-DD (contoh: 2026-05-08)'
     };
   }
 
@@ -95,6 +94,13 @@ function validateAndFormatUpdateTransaction(payload: UpdateTransactionPayload): 
     return {
       valid: false,
       error: 'Nominal harus lebih dari 0'
+    };
+  }
+
+  if (!payload.category || (payload.category !== 'in' && payload.category !== 'out')) {
+    return {
+      valid: false,
+      error: 'Kategori harus berupa "in" atau "out"'
     };
   }
 
@@ -106,16 +112,14 @@ function validateAndFormatUpdateTransaction(payload: UpdateTransactionPayload): 
     };
   }
 
-  // Convert to backend format DD-MM-YYYY
-  const backendDate = convertDateToBackendFormat(isoDate);
-
+  // Send as YYYY-MM-DD (backend expects this format for PATCH)
   return {
     valid: true,
     data: {
       amount: payload.amount,
       category: payload.category,
       note: noteStr,
-      transaction_date: backendDate
+      transaction_date: isoDate
     }
   };
 }

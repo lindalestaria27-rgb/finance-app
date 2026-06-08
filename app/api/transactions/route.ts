@@ -1,27 +1,31 @@
 import { NextResponse } from 'next/server';
-
-const BACKEND_BASE_URL =
-  process.env.FINANCE_API_BASE_URL ?? 'https://finmanagement-car-rental.hf.space';
+import { BACKEND_BASE_URL } from '@/lib/backend';
 
 type BackendTransaction = {
   id: string;
   amount: number;
   category: 'in' | 'out';
+  category_id: string;
   transaction_date: string;
   note: string;
+  vehicle_id?: string;
 };
 
 type UiTransaction = {
   id?: string;
   date: string;
   category: 'income' | 'expense';
+  category_id: string;
   note: string;
   amount: number;
+  vehicle_id?: string;
 };
 
 type CreateTransactionPayload = {
   amount: number;
-  category: 'in' | 'out';
+  category_id: string;
+  vehicle_id?: string;
+  unit: number;
   transaction_date: string;
   note: string;
 };
@@ -77,8 +81,10 @@ function mapTransaction(transaction: BackendTransaction): UiTransaction {
     id: transaction.id,
     date: uiDate,
     category: transaction.category === 'in' ? 'income' : 'expense',
+    category_id: transaction.category_id,
     note: transaction.note,
-    amount: Math.abs(transaction.amount)
+    amount: Math.abs(transaction.amount),
+    vehicle_id: transaction.vehicle_id
   };
 }
 
@@ -139,7 +145,9 @@ function validateAndFormatCreateTransaction(payload: CreateTransactionPayload): 
   error?: string;
   data?: {
     amount: number;
-    category: 'in' | 'out';
+    category_id: string;
+    vehicle_id?: string;
+    unit: number;
     note: string;
     transaction_date: string;
   };
@@ -160,6 +168,13 @@ function validateAndFormatCreateTransaction(payload: CreateTransactionPayload): 
     };
   }
 
+  if (!payload.category_id || typeof payload.category_id !== 'string') {
+    return {
+      valid: false,
+      error: 'Kategori harus dipilih'
+    };
+  }
+
   const noteStr = (payload.note || '').trim();
   if (!noteStr) {
     return {
@@ -168,13 +183,13 @@ function validateAndFormatCreateTransaction(payload: CreateTransactionPayload): 
     };
   }
 
-  // For CREATE: send as-is (YYYY-MM-DD)
-
   return {
     valid: true,
     data: {
       amount: payload.amount,
-      category: payload.category,
+      category_id: payload.category_id,
+      vehicle_id: payload.vehicle_id,
+      unit: payload.unit,
       note: noteStr,
       transaction_date: isoDate
     }
@@ -261,15 +276,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as Partial<CreateTransactionPayload> & {
-      category?: 'in' | 'out' | 'income' | 'expense';
-    };
+    const body = (await request.json()) as Partial<CreateTransactionPayload>;
 
     const payload: CreateTransactionPayload = {
       amount: Number(body.amount ?? 0),
-      category: normalizeCategory(body.category ?? 'out'),
+      category_id: body.category_id ?? '',
+      unit: body.unit ?? 1,
       transaction_date: body.transaction_date ?? '',
-      note: body.note ?? ''
+      note: body.note ?? '',
+      vehicle_id: body.vehicle_id
     };
 
     // Validate and format transaction for CREATE

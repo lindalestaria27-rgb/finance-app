@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-
-const BACKEND_BASE_URL = process.env.FINANCE_API_BASE_URL ?? 'https://fin-management-backend.orangewave-4f1698d3.eastasia.azurecontainerapps.io';
-const BACKEND_BEARER_TOKEN = process.env.FINANCE_API_BEARER_TOKEN ?? 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcl9pZCI6IjBlMDAwMDcxLTRlYTMtNGUyMy05MzhmLWI4Y2RlZmQ0ODliZSIsInJvbGUiOiJzdGFmZiIsImV4cCI6MTc3ODIyNTUwN30.d5hQs9DLHe7k_8yDFMYLVW6YM275Mb_JP-nIE1RIwCw';
+import { BACKEND_BASE_URL, BACKEND_BEARER_TOKEN } from '@/lib/backend';
 
 type RegisterPayload = {
   username: string;
@@ -69,7 +67,7 @@ export async function POST(request: Request) {
     const response = await fetch(`${BACKEND_BASE_URL}/register`, {
       method: 'POST',
       headers: {
-        Authorization: BACKEND_BEARER_TOKEN,
+        Authorization: `Bearer ${BACKEND_BEARER_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload),

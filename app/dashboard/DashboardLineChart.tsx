@@ -25,8 +25,6 @@ export default function DashboardLineChart() {
       .then(setData);
   }, []);
   if (!data) return <div style={{height:220,display:'flex',alignItems:'center',justifyContent:'center'}}>Loading...</div>;
-  // SVG slicing points: expense [190,172,178,156,164,144,154,132], income [210,198,202,180,190,162,168,142]
-  // We'll use these directly for a perfect match
   return (
     <div style={{width:'100%',height:'100%'}}>
       <Line

@@ -581,6 +581,41 @@ th {
   font-size: 0.86rem;
 }
 
+.category-search-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.category-search-input {
+  flex: 1;
+  border: 1px solid #dce4f4;
+  border-radius: 10px;
+  background: #f9fbff;
+  padding: 10px 12px;
+  font: 500 0.86rem "Plus Jakarta Sans", sans-serif;
+  color: var(--ink-900);
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #dce4f4;
+  background: #f7faff;
+  color: #365ea9;
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.btn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .modal-actions {
   margin-top: 14px;
   display: flex;

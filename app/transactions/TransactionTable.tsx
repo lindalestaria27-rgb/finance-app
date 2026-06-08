@@ -4,8 +4,10 @@ export interface Transaction {
   id?: string;
   date: string;
   category: 'income' | 'expense';
+  category_id: string;
   note: string;
   amount: number;
+  vehicle_id?: string;
 }
 
 interface Props {

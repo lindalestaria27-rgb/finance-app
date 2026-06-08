@@ -13,7 +13,9 @@ export default function useSidebarCollapse() {
     ) as HTMLElement | null;
 
     const key = "rfc-sidebar-collapsed";
-    let isCollapsed = localStorage.getItem(key) === "1";
+    const stored = localStorage.getItem(key);
+    // Default to collapsed on first load (stored === null)
+    let isCollapsed = stored === "1" || stored === null;
 
     function applyState(collapsed: boolean) {
       // guard in function
