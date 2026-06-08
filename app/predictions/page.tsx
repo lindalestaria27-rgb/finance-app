@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar"; // Sesuaikan path jika berbeda
+import Sidebar from "../components/Sidebar";
 import "./predictions.css";
 
 import {
@@ -16,30 +16,40 @@ import {
 
 export default function PrediksiPage() {
   const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
+  const fetchPredictions = () => {
+    setLoading(true);
     fetch("/api/predictions")
       .then((res) => res.json())
-      .then(setData);
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchPredictions();
   }, []);
 
-  if (!data) return <div className="loading">Memuat data...</div>;
+  if (!data && loading) return <div className="loading">Memuat data...</div>;
+  if (!data) return <div className="loading">Tidak ada data tersedia.</div>;
 
-  // Format Rupiah standar
   const format = (v: number) => "Rp" + v.toLocaleString("id-ID").replace(/,/g, ".");
 
-  // Memetakan data API ke format Recharts
   const chartData = data.history.map((h: any, index: number) => {
     const isLast = index === data.history.length - 1;
     return {
       name: h.bulan,
       aktual: h.value,
-      // Titik terakhir dari data aktual (Okt) menjadi titik mulai untuk garis prediksi (hijau)
       prediksi: isLast ? h.value : null, 
     };
   });
 
-  // Memasukkan data prediksi bulan depan (Nov)
   chartData.push({
     name: data.prediction.bulan + "*",
     aktual: null,
@@ -51,7 +61,6 @@ export default function PrediksiPage() {
       <Sidebar active="prediksi" />
 
       <main className="main-area">
-        {/* HEADER */}
         <div className="pred-header">
           <div>
             <p className="mini">INTELIJEN KEUANGAN</p>
@@ -61,10 +70,15 @@ export default function PrediksiPage() {
             </p>
           </div>
 
-          <button className="btn-run">Jalankan Prediksi</button>
+          <button 
+            className="btn-run" 
+            onClick={fetchPredictions} 
+            disabled={loading}
+          >
+            {loading ? "Memproses..." : "Jalankan Prediksi"}
+          </button>
         </div>
 
-        {/* KPI */}
         <div className="kpi-row">
           <div className="kpi highlight">
             <p>PREDIKSI PENDAPATAN (BULAN DEPAN)</p>
@@ -85,9 +99,7 @@ export default function PrediksiPage() {
           </div>
         </div>
 
-        {/* GRID BAWAH */}
         <div className="pred-grid">
-          {/* CHART */}
           <div className="card big">
             <div className="card-header">
               <div>
@@ -140,18 +152,15 @@ export default function PrediksiPage() {
             </ResponsiveContainer>
           </div>
 
-          {/* SIDE PANEL (HISTORIS) */}
           <div className="card side">
-            <h3 className="title-bold" style={{ marginBottom: '16px' }}>Input Historis (Dummy)</h3>
+            <h3 className="title-bold" style={{ marginBottom: '16px' }}>Input Historis</h3>
 
             <div className="table-container">
-              {/* Header Tabel */}
               <div className="table-header">
                 <span>BULAN</span>
                 <span className="text-right">PENDAPATAN</span>
               </div>
 
-              {/* Isi Tabel */}
               <div className="table-body">
                 {data.history.map((h: any, i: number) => (
                   <div key={i} className="tr">
@@ -159,10 +168,6 @@ export default function PrediksiPage() {
                     <span className="text-right">{format(h.value)}</span>
                   </div>
                 ))}
-                {/* Menambahkan Dummy data tambahan agar bisa di-scroll seperti di gambar */}
-                <div className="tr"><span>Nov 2025</span><span className="text-right">Rp31.360.000.000</span></div>
-                <div className="tr"><span>Des 2025</span><span className="text-right">Rp32.800.000.000</span></div>
-                <div className="tr"><span>Jan 2026</span><span className="text-right">Rp33.280.000.000</span></div>
               </div>
             </div>
 
