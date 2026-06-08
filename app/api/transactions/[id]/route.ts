@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 
-const BACKEND_BASE_URL = process.env.FINANCE_API_BASE_URL ?? 'https://fin-management-backend.orangewave-4f1698d3.eastasia.azurecontainerapps.io';
+const BACKEND_BASE_URL =
+  process.env.FINANCE_API_BASE_URL ?? 'https://finmanagement-car-rental.hf.space';
+
 
 type UpdateTransactionPayload = {
   amount: number;
